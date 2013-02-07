@@ -8,38 +8,38 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="16" />
 
-    <uses-premission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-premission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-premission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-premission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-premission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-premission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-premission android:name="android.permission.BLUETOOTH" />
-    <uses-premission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-premission android:name="android.permission.CALL_PHONE" />
-    <uses-premission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-premission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-premission android:name="android.permission.INTERNET" />
-    <uses-premission android:name="android.permission.READ_CONTACTS" />
-    <uses-premission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-premission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-premission android:name="android.permission.RECEIVE_SMS" />
-    <uses-premission android:name="android.permission.RECORD_AUDIO" />
-    <uses-premission android:name="android.permission.USE_CREDENTIALS" />
-    <uses-premission android:name="android.permission.WAKE_LOCK" />
-    <uses-premission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-premission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-premission android:name="android.permission.SEND_SMS" />
-    <uses-premission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-premission android:name="android.permission.WRITE_SMS" />
-    <uses-premission android:name="android.permission.READ_SMS" />
-    <uses-premission android:name="android.permission.NFC" />
-    <uses-premission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-premission android:name="android.permission.ACCESS_COARSE_UPDATES" />
-    <uses-premission android:name="android.permission.USE_CREDENTIALS" />
-    <uses-premission android:name="android.permission.READ_SYNC_STATS" />
-    <uses-premission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-premission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -51,6 +51,18 @@
 
                 <!-- standard actions from Intent documentation -->
                 <action android:name="android.net.wifi.WifiManager.WIFI_STATE_CHANGED_ACTION" />
+
+                <!--
+                	Broadcasta se kad se spoji na neku WiFi mrežu. 
+                	Daje podatke o mreži kroz WifiManger.EXTRA_NETWORK_INFO
+                -->
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+
+                <!--
+                	Broadcasta se kad se spoji ili odspoji na neku WiFi mrežu. 
+                	Vraća boolean dal je spojen kroz WifiManager.EXTRA_SUPPLICANT_CONNECTED
+                -->
+                <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE" />
                 <action android:name="android.intent.action.PHONE_STATE" />
                 <action android:name="android.intent.action.AIRPLANE_MODE" />
                 <action android:name="android.intent.action.ANSWER" />

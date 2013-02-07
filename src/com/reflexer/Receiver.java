@@ -27,8 +27,6 @@ public class Receiver extends BroadcastReceiver {
 		} else if(intent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
 			boolean connected = intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false);
 			
-			
-			
 			Log.d("Receiver", "network connected: " + connected);
 		}
 	}

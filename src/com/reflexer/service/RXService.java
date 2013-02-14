@@ -9,10 +9,19 @@ import android.os.IBinder;
 
 public class RXService extends Service {
 
+	
+	/**
+	 * 
+	 * Entry point - register receiver and initiaize it to listen to all acitons set in database.
+	 * Initialize Handlers for specified acitons and register them as observers for the RXService
+	 * 
+	 * 
+	 */
 	@Override
     public void onCreate() {
         super.onCreate();
 
+        
 //        final IntentFilter theFilter = new IntentFilter();
 //        theFilter.addAction(ACTION);
 //
@@ -30,10 +39,17 @@ public class RXService extends Service {
 //        this.registerReceiver(this.yourReceiver, theFilter);
     }
 	
+	
+	/**
+	 * Unregister receiver and destroy handlers
+	 * 
+	 */
 	@Override
     public void onDestroy() {
         super.onDestroy();
 
+        
+        
         // Do not forget to unregister the receiver!!!
 //        this.unregisterReceiver(this.yourReceiver);
     }

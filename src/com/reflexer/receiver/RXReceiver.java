@@ -1,4 +1,4 @@
-package com.reflexer;
+package com.reflexer.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
-public class Receiver extends BroadcastReceiver {
+public class RXReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

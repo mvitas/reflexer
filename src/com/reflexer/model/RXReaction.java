@@ -3,7 +3,7 @@ package com.reflexer.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class RXThat {
+public abstract class RXReaction {
 
 	/**
 	 * Parameters for the action, based on the Property definition

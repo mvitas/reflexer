@@ -3,7 +3,7 @@ package com.reflexer.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class RXThis {
+public abstract class RXStimuli {
 
 	/**
 	 * Values for the conditions of this stimuli, based on the Conditions

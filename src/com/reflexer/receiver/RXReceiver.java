@@ -3,31 +3,39 @@ package com.reflexer.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.util.Log;
+
+import com.reflexer.handler.RXHandler;
+import com.reflexer.service.RXService;
+
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class RXReceiver extends BroadcastReceiver {
 
+	private final static int CORE_THREAD_POOL_SIZE = 2;
+
+	private final RXService service;
+
+	private final ScheduledThreadPoolExecutor executor;
+
+	public RXReceiver(RXService service) {
+		this.service = service;
+		this.executor = new ScheduledThreadPoolExecutor(CORE_THREAD_POOL_SIZE);
+	}
+
 	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.d("Receiver", "intent: " + intent);
-		
-		if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-			//int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
-			
-			NetworkInfo netInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-			
-			WifiManager wifiManager= (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-			WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-			
-			Log.d("Receiver", "network info: " + netInfo);
-			Log.d("Receiver", "wifi info: " + wifiInfo);
-		} else if(intent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
-			boolean connected = intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false);
-			
-			Log.d("Receiver", "network connected: " + connected);
+	public void onReceive(Context context, final Intent intent) {
+		for (int i = 0; i < service.getHandlers().size(); i++) {
+			final RXHandler handler = service.getHandlers().get(i);
+
+			if (handler.isInterestingAction(intent.getAction())) {
+				executor.execute(new Runnable() {
+
+					@Override
+					public void run() {
+						handler.onReceive(service, intent);
+					}
+				});
+			}
 		}
 	}
 }

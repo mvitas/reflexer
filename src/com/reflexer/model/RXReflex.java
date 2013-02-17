@@ -39,6 +39,7 @@ public class RXReflex {
 
 	public void setRxThat(RXReaction rxThat) {
 		this.rxThat = rxThat;
+		this.rxThis.setReaction(rxThat);
 	}
 
 	public void setRxThis(RXStimuli rxThis) {

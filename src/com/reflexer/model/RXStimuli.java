@@ -17,6 +17,15 @@ public abstract class RXStimuli {
 	protected HashMap<String, Object> stateMap = new HashMap<String, Object>();
 
 	/**
+	 * Reaction to this stimuli.
+	 */
+	protected RXReaction reaction;
+
+	public void setReaction(RXReaction reaction) {
+		this.reaction = reaction;
+	}
+
+	/**
 	 * Checks if all the conditions that must be set in order to be able to set
 	 * the given condition (by name) are set.
 	 * 
@@ -103,8 +112,7 @@ public abstract class RXStimuli {
 	}
 
 	/**
-	 * Sets the state of the condition with the given name, and checks if all
-	 * set conditions are met. If conditions are met, returns true.
+	 * Sets the condition with the given name.
 	 * <p>
 	 * If the given condition cannot be set because all the conditions that it
 	 * depends on haven't been set, IllegalStateException is thrown.
@@ -113,16 +121,33 @@ public abstract class RXStimuli {
 	 * IllegalArgumentException is thrown.
 	 * 
 	 * @param conditionName
-	 * @param state
-	 * @return
+	 * @param value
 	 */
-	public boolean setConditionState(String conditionName, Object state) {
+	public void setCondition(String conditionName, Object value) {
 		if (!arePreconditionsMet(conditionName)) {
 			throw new IllegalStateException("Preconditions for " + conditionName + " are not all set");
 		}
 
-		conditionsMap.put(conditionName, state);
+		conditionsMap.put(conditionName, value);
+	}
 
-		return isFulfilled();
+	/**
+	 * Sets the state of the condition with the given name, and checks if all
+	 * set conditions are met. If conditions are met, returns true.
+	 * 
+	 * @param conditionName
+	 * @param state
+	 * @return
+	 */
+	public boolean setConditionState(String conditionName, Object state) {
+		stateMap.put(conditionName, state);
+
+		boolean isFulfilled = isFulfilled();
+
+		if (isFulfilled) {
+
+		}
+
+		return isFulfilled;
 	}
 }

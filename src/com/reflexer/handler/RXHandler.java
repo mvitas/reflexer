@@ -3,6 +3,7 @@ package com.reflexer.handler;
 import android.content.Context;
 import android.content.Intent;
 
+import com.reflexer.model.RXReflex;
 import com.reflexer.model.RXStimuli;
 
 import java.util.ArrayList;
@@ -12,10 +13,10 @@ public abstract class RXHandler {
 	/**
 	 * List of RXStimuli extended classes that are associated with this handler.
 	 */
-	protected ArrayList<RXStimuli> associatedStimuli;
+	protected ArrayList<RXReflex> associatedReflexes;
 
-	public void associateStimuli(RXStimuli stimuli) {
-		associatedStimuli.add(stimuli);
+	public void associateReflex(RXReflex reflex) {
+		associatedReflexes.add(reflex);
 	}
 
 	/**
@@ -26,6 +27,18 @@ public abstract class RXHandler {
 	 */
 	public abstract ArrayList<String> getInterestingActions();
 
+	public boolean isInterestingAction(String action) {
+		ArrayList<String> interestingActions = getInterestingActions();
+
+		for (int i = 0; i < interestingActions.size(); i++) {
+			if (interestingActions.get(i).equals(action)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/**
 	 * Called when a handler
 	 * 
@@ -34,6 +47,6 @@ public abstract class RXHandler {
 	public abstract void onReceive(Context context, Intent intent);
 
 	public void removeAssociation(RXStimuli stimuli) {
-		associatedStimuli.remove(stimuli);
+		associatedReflexes.remove(stimuli);
 	}
 }

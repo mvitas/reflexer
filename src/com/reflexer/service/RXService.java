@@ -4,11 +4,30 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import com.reflexer.config.RXActions;
+import com.reflexer.handler.RXHandler;
 import com.reflexer.model.RXReflex;
+import com.reflexer.receiver.RXReceiver;
 
 import java.util.ArrayList;
 
 public class RXService extends Service {
+
+	/**
+	 * List containing all the reflexes.
+	 */
+	private ArrayList<RXReflex> reflexes;
+
+	/**
+	 * List containing all handlers. Accessed from multiple threads:
+	 * BroadcastReceiver thread and threads spawned by RXReceiver.
+	 */
+	private volatile ArrayList<RXHandler> handlers;
+
+	/**
+	 * BroadcastReceiver that intercepts all possible actions.
+	 */
+	private RXReceiver receiver;
 
 	/**
 	 * Activates an existing reflex. If a reflex is already active has no
@@ -26,7 +45,7 @@ public class RXService extends Service {
 	 * @param reflex
 	 */
 	public void addReflex(RXReflex reflex) {
-
+		reflexes.add(reflex);
 	}
 
 	/**
@@ -46,12 +65,17 @@ public class RXService extends Service {
 	 * @return
 	 */
 	public ArrayList<RXReflex> getReflexes() {
-		return null;
+		return reflexes;
+	}
+
+	public ArrayList<RXHandler> getHandlers() {
+		return handlers;
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return null;
+		RXBinder binder = new RXBinder(this);
+		return binder;
 	}
 
 	/**
@@ -65,23 +89,18 @@ public class RXService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		registerBroadcastReceiver();
+	}
 
-		// final IntentFilter theFilter = new IntentFilter();
-		// theFilter.addAction(ACTION);
-		//
-		// this.yourReceiver = new BroadcastReceiver() {
-		//
-		// @Override
-		// public void onReceive(Context context, Intent intent) {
-		// // Do whatever you need it to do when it receives the broadcast
-		// // Example show a Toast message...
-		// showSuccessfulBroadcast();
-		// }
-		// };
-		//
-		// // Registers the receiver so that your service will listen for
-		// broadcasts
-		// this.registerReceiver(this.yourReceiver, theFilter);
+	private void registerBroadcastReceiver() {
+		receiver = new RXReceiver(this);
+		registerReceiver(receiver, RXActions.getIntentFilter());
+	}
+
+	private void unregisterBroadcastReceiver() {
+		if (receiver != null) {
+			unregisterReceiver(receiver);
+		}
 	}
 
 	/**
@@ -91,9 +110,7 @@ public class RXService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-
-		// Do not forget to unregister the receiver!!!
-		// this.unregisterReceiver(this.yourReceiver);
+		unregisterBroadcastReceiver();
 	}
 
 	/**
@@ -102,7 +119,7 @@ public class RXService extends Service {
 	 * @param reflex
 	 */
 	public void removeReflex(RXReflex reflex) {
-
+		reflexes.remove(reflex);
 	}
 
 }

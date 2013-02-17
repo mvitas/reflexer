@@ -1,31 +1,72 @@
 package com.reflexer.model;
 
+import java.util.ArrayList;
+
 public class RXCondition {
 
-	private RXThis rxThis;
-	private RXThat rxThat;
-	
-	public RXCondition(RXThis rxThis, RXThat rxThat) {
+	/**
+	 * Does this condition have to be set.
+	 */
+	private boolean required;
+
+	/**
+	 * Name of the condition.
+	 */
+	private String name;
+
+	/**
+	 * Type of the condition. Possible types defined in RXTypes.
+	 */
+	private String type;
+
+	/**
+	 * List of conditions that must be set in order for this condition to be
+	 * available.
+	 */
+	private ArrayList<RXCondition> dependsOn;
+
+	public RXCondition(boolean required, String name, String type, ArrayList<RXCondition> dependsOn) {
 		super();
-		this.setRxThis(rxThis);
-		this.setRxThat(rxThat);
+		this.required = required;
+		this.name = name;
+		this.type = type;
+		this.dependsOn = dependsOn;
 	}
 
-	public RXThat getRxThat() {
-		return rxThat;
+	public void addDependency(RXCondition condition) {
+		this.dependsOn.add(condition);
 	}
 
-	public void setRxThat(RXThat rxThat) {
-		this.rxThat = rxThat;
+	public ArrayList<RXCondition> getDependsOn() {
+		return dependsOn;
 	}
 
-	public RXThis getRxThis() {
-		return rxThis;
+	public String getName() {
+		return name;
 	}
 
-	public void setRxThis(RXThis rxThis) {
-		this.rxThis = rxThis;
+	public String getType() {
+		return type;
 	}
-	
-	
+
+	public boolean isRequired() {
+		return required;
+	}
+
+	public void setDependsOn(ArrayList<RXCondition> dependsOn) {
+		this.dependsOn = dependsOn;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 }

@@ -70,6 +70,14 @@ public abstract class RXStimuli {
 	public abstract ArrayList<RXCondition> getConditionList();
 
 	/**
+	 * Should return class name of the RXHandler extended class that handles
+	 * this stimuli.
+	 * 
+	 * @return
+	 */
+	public abstract String getHandlerClassName();
+
+	/**
 	 * Returns true if this condition is fulfilled.
 	 * 
 	 * @return
@@ -79,6 +87,12 @@ public abstract class RXStimuli {
 		for (String conditionName : conditionsMap.keySet()) {
 			Object conditionValue = conditionsMap.get(conditionName);
 			Object currentState = stateMap.get(conditionName);
+
+			RXCondition condition = getConditionDefinitionByName(conditionName);
+
+			if (currentState == null && !condition.isRequired()) {
+				continue;
+			}
 
 			if (!conditionValue.equals(currentState)) {
 				return false;

@@ -17,7 +17,7 @@ public class RXCondition {
 	/**
 	 * Type of the condition. Possible types defined in RXTypes.
 	 */
-	private String type;
+	private int type;
 
 	/**
 	 * List of conditions that must be set in order for this condition to be
@@ -25,7 +25,7 @@ public class RXCondition {
 	 */
 	private ArrayList<RXCondition> dependsOn;
 
-	public RXCondition(boolean required, String name, String type, ArrayList<RXCondition> dependsOn) {
+	public RXCondition(boolean required, String name, int type, ArrayList<RXCondition> dependsOn) {
 		super();
 		this.required = required;
 		this.name = name;
@@ -45,7 +45,7 @@ public class RXCondition {
 		return name;
 	}
 
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 
@@ -65,7 +65,7 @@ public class RXCondition {
 		this.required = required;
 	}
 
-	public void setType(String type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 

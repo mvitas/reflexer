@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<stimuli name="WiFiStimuli">
+  <handler class="com.bla.ClassName">
+    <interested-in alias="network-state-changed">android.net.wifi.STATE_CHANGE</interested-in>
+    <interested-in alias="supplicant-connection-change">android.net.wifi.supplicant.CONNECTION_CHANGE</interested-in>
+  </handler>
+  <conditions>
+    <condition name="connected" type="rx-bool" required="true" />
+	<condition name="network-name" type="rx-string" required="false">
+      <depends-on>connected</depends-on>
+	</condition>
+  </conditions>
+</stimuli>

@@ -8,26 +8,20 @@ import android.net.wifi.WifiManager;
 
 import com.reflexer.model.RXWifiStimuli;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RXWifiHandler extends RXHandler {
 
-	// private boolean connected;
+	private final static String NETWORK_STATE_CHANGED_ACTION = "network-state-changed";
+	private final static String SUPPLICANT_CONNECTION_CHANGE_ACTION = "supplicant-connection-change";
 
-	// private String currentNetwork;
-
-	@Override
-	public ArrayList<String> getInterestingActions() {
-		ArrayList<String> interestingActions = new ArrayList<String>();
-		interestingActions.add(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-		interestingActions.add(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
-
-		return interestingActions;
+	public RXWifiHandler(HashMap<String, String> interestingActions) {
+		super(interestingActions);
 	}
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+		if (isAction(NETWORK_STATE_CHANGED_ACTION, intent)) {
 			NetworkInfo netInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 
 			WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -37,7 +31,7 @@ public class RXWifiHandler extends RXHandler {
 				associatedReflexes.get(i).getRxThis()
 						.setConditionState(RXWifiStimuli.CONDITION_NETWORK_NAME, wifiInfo.getSSID());
 			}
-		} else if (intent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
+		} else if (isAction(SUPPLICANT_CONNECTION_CHANGE_ACTION, intent)) {
 			boolean connected = intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false);
 
 			for (int i = 0; i < associatedReflexes.size(); i++) {

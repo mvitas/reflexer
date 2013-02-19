@@ -3,7 +3,14 @@ package com.reflexer.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class RXStimuli {
+public class RXStimuli {
+
+	/**
+	 * List of all the conditions for this stimuli.
+	 */
+	protected ArrayList<RXCondition> conditionList;
+
+	protected String handlerName;
 
 	/**
 	 * Values for the conditions of this stimuli, based on the Conditions
@@ -20,6 +27,11 @@ public abstract class RXStimuli {
 	 * Reaction to this stimuli.
 	 */
 	protected RXReaction reaction;
+
+	/**
+	 * Name of this stimuli.
+	 */
+	protected String name;
 
 	public void setReaction(RXReaction reaction) {
 		this.reaction = reaction;
@@ -76,7 +88,9 @@ public abstract class RXStimuli {
 	 * 
 	 * @return
 	 */
-	public abstract ArrayList<RXCondition> getConditionList();
+	public ArrayList<RXCondition> getConditionList() {
+		return conditionList;
+	}
 
 	/**
 	 * Should return class name of the RXHandler extended class that handles
@@ -84,7 +98,9 @@ public abstract class RXStimuli {
 	 * 
 	 * @return
 	 */
-	public abstract String getHandlerClassName();
+	public String getHandlerClassName() {
+		return handlerName;
+	}
 
 	/**
 	 * Returns true if this condition is fulfilled.

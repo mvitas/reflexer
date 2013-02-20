@@ -25,10 +25,4 @@ public class RXWifiStimuli extends RXStimuli {
 		return conditionList;
 	}
 
-	@Override
-	public String getHandlerClassName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

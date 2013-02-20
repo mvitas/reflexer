@@ -65,6 +65,9 @@ public class RXReactionParser {
 
 		reaction.setRXPropertyList(readProperties(parser));
 
+		parser.next();
+		parser.require(XmlPullParser.END_TAG, ns, REACTION_TAG);
+
 		return reaction;
 	}
 

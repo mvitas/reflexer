@@ -19,12 +19,12 @@ public abstract class RXHandler {
 
 	protected HashMap<String, String> interestingActions;
 
-	public RXHandler(HashMap<String, String> interestingActions) {
-		this.interestingActions = interestingActions;
-	}
-
 	public void associateReflex(RXReflex reflex) {
 		associatedReflexes.add(reflex);
+	}
+
+	public void setInterestingActions(HashMap<String, String> interestingActions) {
+		this.interestingActions = interestingActions;
 	}
 
 	/**
@@ -33,7 +33,7 @@ public abstract class RXHandler {
 	 * 
 	 * @return ArrayList of Strings representing intent actions
 	 */
-	public ArrayList<String> getInterestingActions() {
+	public ArrayList<String> getInterestingActionsList() {
 		ArrayList<String> actionsList = new ArrayList<String>();
 
 		for (String key : interestingActions.keySet()) {
@@ -44,7 +44,7 @@ public abstract class RXHandler {
 	}
 
 	public boolean isInterestingAction(String action) {
-		ArrayList<String> interestingActions = getInterestingActions();
+		ArrayList<String> interestingActions = getInterestingActionsList();
 
 		for (int i = 0; i < interestingActions.size(); i++) {
 			if (interestingActions.get(i).equals(action)) {

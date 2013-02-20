@@ -8,16 +8,10 @@ import android.net.wifi.WifiManager;
 
 import com.reflexer.model.RXWifiStimuli;
 
-import java.util.HashMap;
-
 public class RXWifiHandler extends RXHandler {
 
 	private final static String NETWORK_STATE_CHANGED_ACTION = "network-state-changed";
 	private final static String SUPPLICANT_CONNECTION_CHANGE_ACTION = "supplicant-connection-change";
-
-	public RXWifiHandler(HashMap<String, String> interestingActions) {
-		super(interestingActions);
-	}
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

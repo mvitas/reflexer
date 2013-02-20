@@ -1,5 +1,7 @@
 package com.reflexer.model;
 
+import com.reflexer.handler.RXHandler;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,7 +12,7 @@ public class RXStimuli {
 	 */
 	protected ArrayList<RXCondition> conditionList;
 
-	protected String handlerName;
+	protected RXHandler handler;
 
 	/**
 	 * Values for the conditions of this stimuli, based on the Conditions
@@ -98,8 +100,8 @@ public class RXStimuli {
 	 * 
 	 * @return
 	 */
-	public String getHandlerClassName() {
-		return handlerName;
+	public RXHandler getRXHandler() {
+		return handler;
 	}
 
 	/**
@@ -165,5 +167,23 @@ public class RXStimuli {
 		}
 
 		return isFulfilled;
+	}
+
+	/**
+	 * Sets the name of this stimuli.
+	 * 
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Gets the name of this stimuli.
+	 * 
+	 * @return
+	 */
+	public String getName() {
+		return name;
 	}
 }

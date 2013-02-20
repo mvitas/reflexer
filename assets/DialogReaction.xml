@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<reaction name="DialogReaction" class="com.bla.Reaction">
+  <properties>
+    <property name="" type="" required=true/false />
+  </properties>
+</reaction>

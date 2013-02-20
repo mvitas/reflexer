@@ -4,9 +4,9 @@ public class RXProperty {
 
 	private boolean required;
 	private String name;
-	private String type;
-	
-	public RXProperty(boolean required, String name, String type) {
+	private int type;
+
+	public RXProperty(boolean required, String name, int type) {
 		super();
 		this.setRequired(required);
 		this.setName(name);
@@ -29,13 +29,12 @@ public class RXProperty {
 		this.name = name;
 	}
 
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(int type) {
 		this.type = type;
 	}
-	
-	
+
 }

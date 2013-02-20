@@ -26,8 +26,7 @@ public class RXTypeCaster {
 		return rxTypeCaster;
 	}
 
-	public Object initializeType(int rxType, String name, String jsonString)
-			throws JSONException {
+	public Object initializeType(int rxType, String name, String jsonString) throws JSONException {
 
 		switch (rxType) {
 		case RXTypes.RX_BOOL:

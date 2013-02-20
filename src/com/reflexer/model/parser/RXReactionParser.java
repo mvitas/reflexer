@@ -59,8 +59,9 @@ public class RXReactionParser {
 			}
 		}
 
-		Class reactionClass = Class.forName(className);
-		reaction = (RXReaction) reactionClass.newInstance();
+		@SuppressWarnings("unchecked")
+		Class<? extends RXReaction> reactionClass = (Class<? extends RXReaction>) Class.forName(className);
+		reaction = reactionClass.newInstance();
 
 		reaction.setRXPropertyList(readProperties(parser));
 

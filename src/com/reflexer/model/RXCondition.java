@@ -25,12 +25,34 @@ public class RXCondition {
 	 */
 	private ArrayList<RXCondition> dependsOn;
 
-	public RXCondition(boolean required, String name, int type, ArrayList<RXCondition> dependsOn) {
+	public RXCondition(boolean required, String name, int type) {
 		super();
 		this.required = required;
 		this.name = name;
 		this.type = type;
-		this.dependsOn = dependsOn;
+		this.dependsOn = new ArrayList<RXCondition>();
+	}
+
+	/**
+	 * Returns RXCondition that defines a condition by given name. Utility
+	 * method.
+	 * <p>
+	 * Throws IllegalArgumentException if there is no condition defined with the
+	 * given name.
+	 * 
+	 * @param conditionName
+	 *            name of the condition
+	 * @return
+	 */
+	public static RXCondition getConditionDefinitionByName(String conditionName,
+			ArrayList<RXCondition> conditionDefinitions) {
+		for (int i = 0; i < conditionDefinitions.size(); i++) {
+			if (conditionDefinitions.get(i).getName().equals(conditionName)) {
+				return conditionDefinitions.get(i);
+			}
+		}
+
+		throw new IllegalArgumentException("Condition with the name " + conditionName + " id not defined");
 	}
 
 	public void addDependency(RXCondition condition) {

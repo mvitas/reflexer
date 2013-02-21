@@ -48,7 +48,7 @@ public class RXStimuli {
 	 * @return true if all the preconditions are set
 	 */
 	protected boolean arePreconditionsMet(String conditionName) {
-		RXCondition condition = getConditionDefinitionByName(conditionName);
+		RXCondition condition = RXCondition.getConditionDefinitionByName(conditionName, conditionList);
 
 		ArrayList<RXCondition> preconditions = condition.getDependsOn();
 
@@ -61,26 +61,8 @@ public class RXStimuli {
 		return true;
 	}
 
-	/**
-	 * Returns RXCondition that defines a condition by given name.
-	 * <p>
-	 * Throws IllegalArgumentException if there is no condition defined with the
-	 * given name.
-	 * 
-	 * @param conditionName
-	 *            name of the condition
-	 * @return
-	 */
-	protected RXCondition getConditionDefinitionByName(String conditionName) {
-		ArrayList<RXCondition> conditionDefinitions = getConditionList();
-
-		for (int i = 0; i < conditionDefinitions.size(); i++) {
-			if (conditionDefinitions.get(i).getName().equals(conditionName)) {
-				return conditionDefinitions.get(i);
-			}
-		}
-
-		throw new IllegalArgumentException("Condition with the name " + conditionName + " id not defined");
+	public void setConditionList(ArrayList<RXCondition> conditionList) {
+		this.conditionList = conditionList;
 	}
 
 	/**
@@ -95,8 +77,16 @@ public class RXStimuli {
 	}
 
 	/**
-	 * Should return class name of the RXHandler extended class that handles
-	 * this stimuli.
+	 * Sets RXHandler extending class that handles this stimuli.
+	 * 
+	 * @param handler
+	 */
+	public void setRXHandler(RXHandler handler) {
+		this.handler = handler;
+	}
+
+	/**
+	 * Returns RXHandler extending class that handles this stimuli.
 	 * 
 	 * @return
 	 */
@@ -115,7 +105,7 @@ public class RXStimuli {
 			Object conditionValue = conditionsMap.get(conditionName);
 			Object currentState = stateMap.get(conditionName);
 
-			RXCondition condition = getConditionDefinitionByName(conditionName);
+			RXCondition condition = RXCondition.getConditionDefinitionByName(conditionName, conditionList);
 
 			if (currentState == null && !condition.isRequired()) {
 				continue;

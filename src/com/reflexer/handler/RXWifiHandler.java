@@ -6,12 +6,13 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import com.reflexer.model.RXWifiStimuli;
-
 public class RXWifiHandler extends RXHandler {
 
-	private final static String NETWORK_STATE_CHANGED_ACTION = "network-state-changed";
-	private final static String SUPPLICANT_CONNECTION_CHANGE_ACTION = "supplicant-connection-change";
+	private static final String CONDITION_NETWORK_NAME = "network-name";
+	private static final String CONDITION_CONNECTED = "connected";
+
+	private static final String NETWORK_STATE_CHANGED_ACTION = "network-state-changed";
+	private static final String SUPPLICANT_CONNECTION_CHANGE_ACTION = "supplicant-connection-change";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -22,15 +23,14 @@ public class RXWifiHandler extends RXHandler {
 			WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
 			for (int i = 0; i < associatedReflexes.size(); i++) {
-				associatedReflexes.get(i).getRxThis()
-						.setConditionState(RXWifiStimuli.CONDITION_NETWORK_NAME, wifiInfo.getSSID());
+				associatedReflexes.get(i).getRxThis().setConditionState(CONDITION_NETWORK_NAME, wifiInfo.getSSID());
 			}
 		} else if (isAction(SUPPLICANT_CONNECTION_CHANGE_ACTION, intent)) {
 			boolean connected = intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false);
 
 			for (int i = 0; i < associatedReflexes.size(); i++) {
 				associatedReflexes.get(i).getRxThis()
-						.setConditionState(RXWifiStimuli.CONDITION_CONNECTED, Boolean.valueOf(connected));
+						.setConditionState(CONDITION_CONNECTED, Boolean.valueOf(connected));
 			}
 
 		}

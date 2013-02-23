@@ -1,45 +1,98 @@
 package com.reflexer.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
+import android.content.ContentValues;
+
+import com.reflexer.database.RXDatabaseHelper;
 
 public abstract class RXReaction {
+
+	/** 
+	 * Id from database
+	 */
+	protected int id;  
+	
+	/**
+	 * RxReaction name
+	 */
+	protected String name; 
+	
+	protected ArrayList<RXProperty> paramsList;
 
 	/**
 	 * Parameters for the action, based on the Property definition
 	 */
-	protected HashMap<String, Object> paramsMap = new HashMap<String, Object>();
+	public abstract ArrayList<RXPropertyDefinition> getRXPropertyDefinitionList();
+	
+	public abstract void setRXPropertyDefinitionList(ArrayList<RXPropertyDefinition> readProperties);
+	
+	public RXReaction(String name){
+		this.id = -1;
+		this.name = name;
+		this.paramsList = new ArrayList<RXProperty>();
+	}
 
-	protected ArrayList<RXProperty> propertyList = new ArrayList<RXProperty>();
-
+	public RXReaction(int id, String name){
+		this.id = id;
+		this.name = name;
+		this.paramsList = new ArrayList<RXProperty>();
+	}
+	
+	public RXReaction(int id, String name, ArrayList<RXProperty> paramsList){
+		this.id = id;
+		this.name = name;
+		this.paramsList = paramsList;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void addRXParam(RXProperty param){
+		paramsList.add(param);
+	}
+	
 	/**
-	 * List of existing property fields required to generate the UI and fill
-	 * data
-	 * 
+	 * Returns the property for the seleced id
+	 * @param id
 	 * @return
 	 */
-	public ArrayList<RXProperty> getRXPropertyList() {
-		return propertyList;
+	public RXProperty getRXParamById(int id){
+		RXProperty property = null;
+		
+		for (RXProperty param : paramsList){
+			if (param.getId() == id){
+				property = param;
+			}
+		}
+		return property;
 	}
+	
+	/**
+	 * Get all params
+	 * @return
+	 */
+	public ArrayList<RXProperty> getParamList(){
+		return paramsList;
+	}
+	
+	public abstract void execute();
 
 	/**
-	 * Add another property to the list of fields required to generate the UI
-	 * and fill the data
+	 * Creates CVs for "id" and "name"
 	 * 
-	 * @param property
+	 * Params are created from the 
+	 * @return
 	 */
-	public void setRXPropertyList(ArrayList<RXProperty> propertyList) {
-		this.propertyList = propertyList;
+	protected ContentValues toContentValues(){
+		ContentValues cv = new ContentValues();
+		if (id != -1){
+			cv.put(RXDatabaseHelper.COLUMN_REACTION_ID, id);
+		}
+		cv.put(RXDatabaseHelper.COLUMN_REACTION_NAME, name);
+		
+		return cv;
 	}
-
-	public void setRXParam(String name, Object value) {
-		paramsMap.put(name, value);
-	}
-
-	public Object getRXParam(String name) {
-		return paramsMap.get(name);
-	}
-
-	public abstract void execute();
 
 }

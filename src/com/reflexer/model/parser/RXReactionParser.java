@@ -1,17 +1,17 @@
 package com.reflexer.model.parser;
 
-import android.util.Xml;
-
-import com.reflexer.model.RXProperty;
-import com.reflexer.model.RXReaction;
-import com.reflexer.util.RXTypes;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import android.util.Xml;
+
+import com.reflexer.model.RXPropertyDefinition;
+import com.reflexer.model.RXReaction;
+import com.reflexer.util.RXTypes;
 
 public class RXReactionParser {
 
@@ -63,7 +63,7 @@ public class RXReactionParser {
 		Class<? extends RXReaction> reactionClass = (Class<? extends RXReaction>) Class.forName(className);
 		reaction = reactionClass.newInstance();
 
-		reaction.setRXPropertyList(readProperties(parser));
+		reaction.setRXPropertyDefinitionList(readProperties(parser));
 
 		parser.next();
 		parser.require(XmlPullParser.END_TAG, ns, REACTION_TAG);
@@ -71,8 +71,8 @@ public class RXReactionParser {
 		return reaction;
 	}
 
-	private ArrayList<RXProperty> readProperties(XmlPullParser parser) throws XmlPullParserException, IOException {
-		ArrayList<RXProperty> properties = new ArrayList<RXProperty>();
+	private ArrayList<RXPropertyDefinition> readProperties(XmlPullParser parser) throws XmlPullParserException, IOException {
+		ArrayList<RXPropertyDefinition> properties = new ArrayList<RXPropertyDefinition>();
 
 		parser.next();
 		parser.require(XmlPullParser.START_TAG, ns, PROPERTIES_TAG);
@@ -86,7 +86,7 @@ public class RXReactionParser {
 		return properties;
 	}
 
-	private RXProperty readProperty(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private RXPropertyDefinition readProperty(XmlPullParser parser) throws XmlPullParserException, IOException {
 		parser.require(XmlPullParser.START_TAG, ns, PROPERTY_TAG);
 
 		String name = null;
@@ -111,7 +111,7 @@ public class RXReactionParser {
 		parser.next();
 		parser.require(XmlPullParser.END_TAG, ns, PROPERTY_TAG);
 
-		return new RXProperty(required, name, type);
+		return new RXPropertyDefinition(required, name, type);
 
 	}
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import com.reflexer.model.RXReflex;
-import com.reflexer.model.RXStimuli;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,7 +80,11 @@ public abstract class RXHandler {
 	 */
 	public abstract void onReceive(Context context, Intent intent);
 
-	public void removeAssociation(RXStimuli stimuli) {
-		associatedReflexes.remove(stimuli);
+	public void removeAssociation(RXReflex reflex) {
+		associatedReflexes.remove(reflex);
+	}
+
+	public boolean hasAssociations() {
+		return associatedReflexes.size() > 0;
 	}
 }

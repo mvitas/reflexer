@@ -42,8 +42,8 @@ public class RXService extends Service {
 	private ArrayList<RXReflex> reflexes;
 
 	/**
-	 * List containing all handlers. Accessed from multiple threads:
-	 * BroadcastReceiver thread and threads spawned by RXReceiver.
+	 * List containing currently active handlers. Accessed from multiple
+	 * threads: BroadcastReceiver thread and threads spawned by RXReceiver.
 	 */
 	private volatile ArrayList<RXHandler> handlers;
 
@@ -53,22 +53,33 @@ public class RXService extends Service {
 	private RXReceiver receiver;
 
 	/**
+	 * Checks if given RXHandler is already in the list of active hadnlers.
+	 * 
+	 * @param handler
+	 * @return
+	 */
+	private boolean isHandlerActive(RXHandler handler) {
+		for (int i = 0; i < handlers.size(); i++) {
+			if (handlers.get(i) == handler) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Activates an existing reflex. If a reflex is already active has no
 	 * effect.
 	 * 
 	 * @param reflex
 	 */
 	public void activateReflex(RXReflex reflex) {
+		if (!isHandlerActive(reflex.getRxThis().getRXHandler())) {
+			handlers.add(reflex.getRxThis().getRXHandler());
+		}
 
-	}
-
-	/**
-	 * Adds a new reflex. Reflex is by default active when added.
-	 * 
-	 * @param reflex
-	 */
-	public void addReflex(RXReflex reflex) {
-		reflexes.add(reflex);
+		reflex.getRxThis().getRXHandler().associateReflex(reflex);
 	}
 
 	/**
@@ -78,7 +89,31 @@ public class RXService extends Service {
 	 * @param reflex
 	 */
 	public void deactivateReflex(RXReflex reflex) {
+		reflex.getRxThis().getRXHandler().removeAssociation(reflex);
 
+		if (!reflex.getRxThis().getRXHandler().hasAssociations()) {
+			handlers.remove(reflex.getRxThis().getRXHandler());
+		}
+	}
+
+	/**
+	 * Adds a new reflex. Reflex is by default active when added.
+	 * 
+	 * @param reflex
+	 */
+	public void addReflex(RXReflex reflex) {
+		reflexes.add(reflex);
+		activateReflex(reflex);
+	}
+
+	/**
+	 * Removes an existing reflex. Reflex is permanently deleted.
+	 * 
+	 * @param reflex
+	 */
+	public void removeReflex(RXReflex reflex) {
+		deactivateReflex(reflex);
+		reflexes.remove(reflex);
 	}
 
 	/**
@@ -194,15 +229,6 @@ public class RXService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		unregisterBroadcastReceiver();
-	}
-
-	/**
-	 * Removes an existing reflex. Reflex is permanently deleted.
-	 * 
-	 * @param reflex
-	 */
-	public void removeReflex(RXReflex reflex) {
-		reflexes.remove(reflex);
 	}
 
 }

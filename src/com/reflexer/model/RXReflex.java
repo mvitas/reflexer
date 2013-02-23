@@ -46,4 +46,12 @@ public class RXReflex {
 		this.rxThis = rxThis;
 	}
 
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
 }

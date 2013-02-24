@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<reaction name="TestReaction" class="com.reflexer.model.reaction.RXTestReaction">
+  <properties>
+    <property name="output" type="rx-string" required="false" />
+  </properties>
+</reaction>

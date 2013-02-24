@@ -1,94 +1,15 @@
 package com.reflexer.model;
 
-import java.util.ArrayList;
-
+//TODO: provjerit jel nam ovo treba uopce
 public class RXCondition {
 
-	/**
-	 * Does this condition have to be set.
-	 */
-	private boolean required;
+	private int id;
 
-	/**
-	 * Name of the condition.
-	 */
 	private String name;
 
-	/**
-	 * Type of the condition. Possible types defined in RXTypes.
-	 */
-	private int type;
+	private Object value;
 
-	/**
-	 * List of conditions that must be set in order for this condition to be
-	 * available.
-	 */
-	private ArrayList<RXCondition> dependsOn;
+	protected RXCondition(String name, Object value) {
 
-	public RXCondition(boolean required, String name, int type) {
-		super();
-		this.required = required;
-		this.name = name;
-		this.type = type;
-		this.dependsOn = new ArrayList<RXCondition>();
 	}
-
-	/**
-	 * Returns RXCondition that defines a condition by given name. Utility
-	 * method.
-	 * <p>
-	 * Throws IllegalArgumentException if there is no condition defined with the
-	 * given name.
-	 * 
-	 * @param conditionName
-	 *            name of the condition
-	 * @return
-	 */
-	public static RXCondition getConditionDefinitionByName(String conditionName,
-			ArrayList<RXCondition> conditionDefinitions) {
-		for (int i = 0; i < conditionDefinitions.size(); i++) {
-			if (conditionDefinitions.get(i).getName().equals(conditionName)) {
-				return conditionDefinitions.get(i);
-			}
-		}
-
-		throw new IllegalArgumentException("Condition with the name " + conditionName + " id not defined");
-	}
-
-	public void addDependency(RXCondition condition) {
-		this.dependsOn.add(condition);
-	}
-
-	public ArrayList<RXCondition> getDependsOn() {
-		return dependsOn;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public int getType() {
-		return type;
-	}
-
-	public boolean isRequired() {
-		return required;
-	}
-
-	public void setDependsOn(ArrayList<RXCondition> dependsOn) {
-		this.dependsOn = dependsOn;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
-
 }

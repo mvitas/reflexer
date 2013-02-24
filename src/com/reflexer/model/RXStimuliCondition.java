@@ -4,13 +4,13 @@ import android.content.ContentValues;
 
 import com.reflexer.database.RXDatabaseHelper;
 
-public class RXStimuliProperty extends RXProperty {
+public class RXStimuliCondition extends RXProperty {
 
-	public RXStimuliProperty(String name, Object value) {
+	public RXStimuliCondition(String name, Object value) {
 		super(name, value);
 	}
 
-	public RXStimuliProperty(int id, String name, Object value) {
+	public RXStimuliCondition(int id, String name, Object value) {
 		super(id, name, value);
 	}
 

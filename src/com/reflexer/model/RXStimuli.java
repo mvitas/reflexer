@@ -1,53 +1,116 @@
 package com.reflexer.model;
 
 import android.content.ContentValues;
+import android.content.Context;
 
 import com.reflexer.database.RXDatabaseHelper;
-import com.reflexer.handler.RXHandler;
+import com.reflexer.model.parser.RXStimuliDefinitionParser;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RXStimuli {
 
-	private int id;
 	/**
-	 * List of all the conditions for this stimuli.
+	 * Path of the stimuli XML definitions in assets folder.
 	 */
-	protected ArrayList<RXCondition> conditionList;
+	private static final String STIMULI_PATH = "stimuli";
 
-	protected RXHandler handler;
+	/**
+	 * ID of this stimuli in the database.
+	 */
+	private int id;
 
 	/**
 	 * Values for the conditions of this stimuli, based on the Conditions
 	 * definitions.
 	 */
-	protected HashMap<String, Object> conditionsMap = new HashMap<String, Object>();
+	protected HashMap<String, Object> currentConditionState = new HashMap<String, Object>();
 
 	/**
-	 * Current state of the conditions defined by this stimuli.
+	 * State of conditions defined by user.
 	 */
-	private ArrayList<RXStimuliProperty> paramsList = new ArrayList<RXStimuliProperty>();
+	private ArrayList<RXStimuliCondition> conditionList = new ArrayList<RXStimuliCondition>();
+
+	private IRXReflexListener reflexListener;
 
 	/**
-	 * Reaction to this stimuli.
+	 * Meta data that contains definitions of all the conditions for this
+	 * stimuli and the associated RXHandler for this stimuli.
 	 */
-	protected RXReaction reaction;
+	private final RXStimuliDefinition definition;
 
 	/**
-	 * Name of this stimuli.
+	 * Holds array of all the RXStimuli definitions read from XML files in
+	 * assets.
 	 */
-	protected String name;
-	
-	public RXStimuli (){
+	private static ArrayList<RXStimuliDefinition> stimuliDefinitions;
+
+	public static ArrayList<RXStimuliDefinition> getStimuliDefinitions(Context context) throws IOException {
+		if (stimuliDefinitions == null) {
+			loadStimuli(context);
+		}
+
+		return stimuliDefinitions;
 	}
-	
-	public RXStimuli (String name){
-		this.name = name;
+
+	private static RXStimuliDefinition getStimuliDefinitionByName(Context context, String name) {
+		try {
+			ArrayList<RXStimuliDefinition> definitions = getStimuliDefinitions(context);
+
+			for (int i = 0; i < definitions.size(); i++) {
+				if (definitions.get(i).getName().equals(name)) {
+					return definitions.get(i);
+				}
+			}
+		} catch (IOException e) {
+			throw new IllegalStateException("Error reading stimuli definitions", e);
+		}
+
+		throw new IllegalArgumentException("There is no definiton for stimuli with name: " + name);
 	}
 
-	public void setReaction(RXReaction reaction) {
-		this.reaction = reaction;
+	/**
+	 * Loads available stimuli list.
+	 * 
+	 * @throws IOException
+	 */
+	private static void loadStimuli(Context context) throws IOException {
+		String[] stimuliFileList = context.getAssets().list(STIMULI_PATH);
+
+		RXStimuliDefinitionParser parser = new RXStimuliDefinitionParser();
+		stimuliDefinitions = new ArrayList<RXStimuliDefinition>();
+
+		for (int i = 0; i < stimuliFileList.length; i++) {
+			try {
+				stimuliDefinitions.add(parser.parse(context.getAssets().open(STIMULI_PATH + "/" + stimuliFileList[i])));
+			} catch (XmlPullParserException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public RXStimuli(Context context, String name) {
+		this(context, RXDatabaseHelper.NEW_ITEM, name);
+	}
+
+	public RXStimuli(Context context, int id, String name) {
+		this(context, id, name, new ArrayList<RXStimuliCondition>());
+	}
+
+	public RXStimuli(Context context, int id, String name, ArrayList<RXStimuliCondition> conditionList) {
+		this.id = id;
+		this.definition = getStimuliDefinitionByName(context, name);
+		this.conditionList = conditionList;
 	}
 
 	/**
@@ -59,50 +122,18 @@ public class RXStimuli {
 	 * @return true if all the preconditions are set
 	 */
 	protected boolean arePreconditionsMet(String conditionName) {
-		RXCondition condition = RXCondition.getConditionDefinitionByName(conditionName, conditionList);
+		RXConditionDefinition condition = RXConditionDefinition.getConditionDefinitionByName(conditionName,
+				definition.getConditionDefinitons());
 
-		ArrayList<RXCondition> preconditions = condition.getDependsOn();
+		ArrayList<RXConditionDefinition> preconditions = condition.getDependsOn();
 
 		for (int i = 0; i < preconditions.size(); i++) {
-			if (!conditionsMap.containsKey(preconditions.get(i).getName())) {
+			if (!currentConditionState.containsKey(preconditions.get(i).getName())) {
 				return false;
 			}
 		}
 
 		return true;
-	}
-
-	public void setConditionList(ArrayList<RXCondition> conditionList) {
-		this.conditionList = conditionList;
-	}
-
-	/**
-	 * List of existing condition fields required to generate the UI and fill
-	 * this stimuli data. This is the metadata that defines the structure of
-	 * this stimuli.
-	 * 
-	 * @return
-	 */
-	public ArrayList<RXCondition> getConditionList() {
-		return conditionList;
-	}
-
-	/**
-	 * Sets RXHandler extending class that handles this stimuli.
-	 * 
-	 * @param handler
-	 */
-	public void setRXHandler(RXHandler handler) {
-		this.handler = handler;
-	}
-
-	/**
-	 * Returns RXHandler extending class that handles this stimuli.
-	 * 
-	 * @return
-	 */
-	public RXHandler getRXHandler() {
-		return handler;
 	}
 
 	/**
@@ -112,17 +143,12 @@ public class RXStimuli {
 	 */
 	public boolean isFulfilled() {
 
-		for (String conditionName : conditionsMap.keySet()) {
-			Object conditionValue = conditionsMap.get(conditionName);
-			Object currentState = getRXParamByName(conditionName).getValue();
+		for (int i = 0; i < conditionList.size(); i++) {
+			RXStimuliCondition condition = conditionList.get(i);
 
-			RXCondition condition = RXCondition.getConditionDefinitionByName(conditionName, conditionList);
+			Object currentState = getRXParamByName(condition.getName());
 
-			if (currentState == null && !condition.isRequired()) {
-				continue;
-			}
-
-			if (!conditionValue.equals(currentState)) {
+			if (!condition.getValue().equals(currentState)) {
 				return false;
 			}
 		}
@@ -142,12 +168,12 @@ public class RXStimuli {
 	 * @param conditionName
 	 * @param value
 	 */
-	public void setCondition(String conditionName, Object value) {
+	public void setConditionCurrentState(String conditionName, Object value) {
 		if (!arePreconditionsMet(conditionName)) {
 			throw new IllegalStateException("Preconditions for " + conditionName + " are not all set");
 		}
 
-		conditionsMap.put(conditionName, value);
+		currentConditionState.put(conditionName, value);
 	}
 
 	/**
@@ -158,91 +184,84 @@ public class RXStimuli {
 	 * @param state
 	 * @return
 	 */
-	public boolean setConditionState(RXStimuliProperty property) {
+	public boolean setCondition(RXStimuliCondition condition) {
 		boolean shouldAdd = true;
-		
-		for (RXStimuliProperty p : getParamsList()){
-			if (p.getName().equals(property.getName())){
-				p.setValue(property.getValue());
+
+		for (RXStimuliCondition c : getConditionList()) {
+			if (c.getName().equals(condition.getName())) {
+				c.setValue(condition.getValue());
 				shouldAdd = false;
 			}
 		}
-		if (shouldAdd){
-			getParamsList().add(property);
+		if (shouldAdd) {
+			getConditionList().add(condition);
 		}
 
 		boolean isFulfilled = isFulfilled();
 
-		if (isFulfilled) {
-			
+		if (isFulfilled && reflexListener != null) {
+			reflexListener.onStimulate();
 		}
 
 		return isFulfilled;
 	}
 
-	/**
-	 * Sets the name of this stimuli.
-	 * 
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setReflexListener(IRXReflexListener reflexListener) {
+		this.reflexListener = reflexListener;
+	}
+
+	public RXStimuliDefinition getDefinition() {
+		return definition;
 	}
 
 	/**
-	 * Gets the name of this stimuli.
+	 * Returns the property for the selected id
 	 * 
-	 * @return
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * Returns the property for the seleced id
 	 * @param id
 	 * @return
 	 */
-	public RXStimuliProperty getRXParamById(int id){
-		RXStimuliProperty property = null;
-		
-		for (RXStimuliProperty param : getParamsList()){
-			if (param.getId() == id){
+	public RXStimuliCondition getRXParamById(int id) {
+		RXStimuliCondition property = null;
+
+		for (RXStimuliCondition param : getConditionList()) {
+			if (param.getId() == id) {
 				property = param;
 			}
 		}
 		return property;
 	}
-	
+
 	/**
 	 * Returns the property for name
+	 * 
 	 * @param name
 	 * @return
 	 */
-	public RXProperty getRXParamByName(String name){
+	public RXProperty getRXParamByName(String name) {
 		RXProperty property = null;
-		
-		for (RXProperty param : getParamsList()){
-			if (param.getName() == name){
+
+		for (RXProperty param : getConditionList()) {
+			if (param.getName() == name) {
 				property = param;
 			}
 		}
 		return property;
 	}
-	
+
 	/**
 	 * Creates CVs for "id" and "name"
 	 * 
-	 * Params are created from the 
+	 * Params are created from the
+	 * 
 	 * @return
 	 */
-	public ContentValues toContentValues(){
+	public ContentValues toContentValues() {
 		ContentValues cv = new ContentValues();
-		if (getId() != -1){
-			cv.put(RXDatabaseHelper.COLUMN_STIMULUS_ID, getId());
+		if (getId() != -1) {
+			cv.put(RXDatabaseHelper.COLUMN_RX_STIMULI_PROPERTY_ID, getId());
 		}
-		cv.put(RXDatabaseHelper.COLUMN_SIMULUS_ACTION_NAME, name);
-		
+		cv.put(RXDatabaseHelper.COLUMN_RX_STIMULI_PROPERTY_NAME, definition.getName());
+
 		return cv;
 	}
 
@@ -254,11 +273,11 @@ public class RXStimuli {
 		this.id = id;
 	}
 
-	public ArrayList<RXStimuliProperty> getParamsList() {
-		return paramsList;
+	public ArrayList<RXStimuliCondition> getConditionList() {
+		return conditionList;
 	}
 
-	public void setParamsList(ArrayList<RXStimuliProperty> paramsList) {
-		this.paramsList = paramsList;
+	public void setConditionList(ArrayList<RXStimuliCondition> conditionList) {
+		this.conditionList = conditionList;
 	}
 }

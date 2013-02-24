@@ -6,8 +6,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import com.reflexer.model.RXStimuliProperty;
-
 public class RXWifiHandler extends RXHandler {
 
 	private static final String CONDITION_NETWORK_NAME = "network-name";
@@ -24,18 +22,15 @@ public class RXWifiHandler extends RXHandler {
 			WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 			WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
-			for (int i = 0; i < associatedReflexes.size(); i++) {
-				//ovo treba kod setconditionstate provjeravati da li vec postoji ili ne
-				associatedReflexes.get(i).getRxThis().setConditionState(new RXStimuliProperty(CONDITION_NETWORK_NAME, wifiInfo.getSSID()));
+			for (int i = 0; i < observers.size(); i++) {
+				observers.get(i).setConditionCurrentState(CONDITION_NETWORK_NAME, wifiInfo.getSSID());
 			}
 		} else if (isAction(SUPPLICANT_CONNECTION_CHANGE_ACTION, intent)) {
 			boolean connected = intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false);
 
-			for (int i = 0; i < associatedReflexes.size(); i++) {
-				associatedReflexes.get(i).getRxThis()
-						.setConditionState(new RXStimuliProperty(CONDITION_CONNECTED, Boolean.valueOf(connected)));
+			for (int i = 0; i < observers.size(); i++) {
+				observers.get(i).setConditionCurrentState(CONDITION_CONNECTED, Boolean.valueOf(connected));
 			}
-
 		}
 	}
 }

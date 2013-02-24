@@ -4,12 +4,12 @@ import android.content.ContentValues;
 
 import com.reflexer.database.RXDatabaseHelper;
 
-public class RXReflex {
- 
+public class RXReflex implements IRXReflexListener {
+
 	private int id;
 	private String name;
-	private RXStimuli rxThis;
-	private RXReaction rxThat;
+	private RXStimuli stimuli;
+	private RXReaction reaction;
 
 	/**
 	 * Name of the group in which the reflex is stored.
@@ -21,30 +21,28 @@ public class RXReflex {
 	 */
 	private boolean active;
 
-	public RXReflex(String name, RXStimuli rxThis, RXReaction rxThat) {
-		this.setId(-1);
-		this.name = name;
-		this.setRxThis(rxThis);
-		this.setRxThat(rxThat);
+	public RXReflex(RXStimuli stimuli, RXReaction rection) {
+		this.setId(RXDatabaseHelper.NEW_ITEM);
+		this.setRxThis(stimuli);
+		this.setRxThat(rection);
 	}
-	
-	public RXReflex(int id, String name, RXStimuli rxThis, RXReaction rxThat) {
+
+	public RXReflex(int id, RXStimuli stimuli, RXReaction reaction) {
 		this.setId(id);
-		this.name = name;
-		this.setRxThis(rxThis);
-		this.setRxThat(rxThat);
+		this.setRxThis(stimuli);
+		this.setRxThat(reaction);
 	}
 
 	public String getGroupName() {
 		return groupName;
 	}
 
-	public RXReaction getRxThat() {
-		return rxThat;
+	public RXReaction getReaction() {
+		return reaction;
 	}
 
-	public RXStimuli getRxThis() {
-		return rxThis;
+	public RXStimuli getStimuli() {
+		return stimuli;
 	}
 
 	public void setGroupName(String groupName) {
@@ -52,12 +50,11 @@ public class RXReflex {
 	}
 
 	public void setRxThat(RXReaction rxThat) {
-		this.rxThat = rxThat;
-		this.rxThis.setReaction(rxThat);
+		this.reaction = rxThat;
 	}
 
 	public void setRxThis(RXStimuli rxThis) {
-		this.rxThis = rxThis;
+		this.stimuli = rxThis;
 	}
 
 	public void setActive(boolean active) {
@@ -75,29 +72,35 @@ public class RXReflex {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	/**
-	 * Creates CVs for "id" 
+	 * Creates CVs for "id"
 	 * 
-	 * Params are created from the 
+	 * Params are created from the
+	 * 
 	 * @return
 	 */
-	public ContentValues toContentValues(){
+	public ContentValues toContentValues() {
 		ContentValues cv = new ContentValues();
-		if (id != -1){
+		if (id != -1) {
 			cv.put(RXDatabaseHelper.COLUMN_RX_REFLEX_ID, id);
 		}
 		cv.put(RXDatabaseHelper.COLUMN_RX_REFLEX_NAME, getName());
-		
+
 		return cv;
 	}
 
+	@Override
+	public void onStimulate() {
+		reaction.execute();
+	}
 
 }

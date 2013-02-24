@@ -6,35 +6,21 @@ import android.os.IBinder;
 
 import com.reflexer.config.RXActions;
 import com.reflexer.handler.RXHandler;
-import com.reflexer.model.RXReaction;
+import com.reflexer.model.RXReactionDefinition;
 import com.reflexer.model.RXReflex;
-import com.reflexer.model.RXStimuli;
-import com.reflexer.model.parser.RXReactionParser;
-import com.reflexer.model.parser.RXStimuliParser;
 import com.reflexer.receiver.RXReceiver;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
+//TODO: start the service on boot
 public class RXService extends Service {
-
-	private static final String STIMULI_PATH = "stimuli";
-
-	private static final String REACTIONS_PATH = "reactions";
 
 	private static final String SLASH = "/";
 
 	/**
-	 * List of all available stimuli.
-	 */
-	private ArrayList<RXStimuli> stimuliList;
-
-	/**
 	 * List of all available reactions.
 	 */
-	private ArrayList<RXReaction> reactionList;
+	private ArrayList<RXReactionDefinition> reactionList;
 
 	/**
 	 * List containing all the reflexes.
@@ -53,33 +39,14 @@ public class RXService extends Service {
 	private RXReceiver receiver;
 
 	/**
-	 * Checks if given RXHandler is already in the list of active hadnlers.
-	 * 
-	 * @param handler
-	 * @return
-	 */
-	private boolean isHandlerActive(RXHandler handler) {
-		for (int i = 0; i < handlers.size(); i++) {
-			if (handlers.get(i) == handler) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	 * Activates an existing reflex. If a reflex is already active has no
 	 * effect.
 	 * 
 	 * @param reflex
 	 */
 	public void activateReflex(RXReflex reflex) {
-		if (!isHandlerActive(reflex.getRxThis().getRXHandler())) {
-			handlers.add(reflex.getRxThis().getRXHandler());
-		}
-
-		reflex.getRxThis().getRXHandler().associateReflex(reflex);
+		reflex.getStimuli().getDefinition().getHandler().addObserver(reflex.getStimuli());
+		reflex.getStimuli().setReflexListener(reflex);
 	}
 
 	/**
@@ -89,11 +56,8 @@ public class RXService extends Service {
 	 * @param reflex
 	 */
 	public void deactivateReflex(RXReflex reflex) {
-		reflex.getRxThis().getRXHandler().removeAssociation(reflex);
-
-		if (!reflex.getRxThis().getRXHandler().hasAssociations()) {
-			handlers.remove(reflex.getRxThis().getRXHandler());
-		}
+		reflex.getStimuli().getDefinition().getHandler().removeObserver(reflex.getStimuli());
+		reflex.getStimuli().setReflexListener(null);
 	}
 
 	/**
@@ -149,13 +113,12 @@ public class RXService extends Service {
 		super.onCreate();
 		registerBroadcastReceiver();
 
-		try {
-			loadStimuli();
-			loadReflexes();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// TODO restore reflexes from database
+	}
 
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		return Service.START_STICKY;
 	}
 
 	private void registerBroadcastReceiver() {
@@ -166,58 +129,6 @@ public class RXService extends Service {
 	private void unregisterBroadcastReceiver() {
 		if (receiver != null) {
 			unregisterReceiver(receiver);
-		}
-	}
-
-	/**
-	 * Loads available stimuli list.
-	 * 
-	 * @throws IOException
-	 */
-	private void loadStimuli() throws IOException {
-		String[] stimuliFileList = getAssets().list(STIMULI_PATH);
-
-		RXStimuliParser parser = new RXStimuliParser();
-		stimuliList = new ArrayList<RXStimuli>();
-
-		for (int i = 0; i < stimuliFileList.length; i++) {
-			try {
-				stimuliList.add(parser.parse(getAssets().open(STIMULI_PATH + "/" + stimuliFileList[i])));
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Loads available reflex list.
-	 * 
-	 * @throws IOException
-	 */
-	private void loadReflexes() throws IOException {
-		String[] reactionFileList = getAssets().list(REACTIONS_PATH);
-
-		RXReactionParser parser = new RXReactionParser();
-		reactionList = new ArrayList<RXReaction>();
-
-		for (int i = 0; i < reactionFileList.length; i++) {
-			try {
-				reactionList.add(parser.parse(getAssets().open(REACTIONS_PATH + SLASH + reactionFileList[i])));
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 

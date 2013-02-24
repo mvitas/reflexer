@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.reflexer.model.RXReflex;
+import com.reflexer.model.RXStimuli;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +14,20 @@ public abstract class RXHandler {
 	/**
 	 * List of RXStimuli extended classes that are associated with this handler.
 	 */
-	protected ArrayList<RXReflex> associatedReflexes;
+	protected ArrayList<RXStimuli> observers;
 
 	protected HashMap<String, String> interestingActions;
 
-	public void associateReflex(RXReflex reflex) {
-		associatedReflexes.add(reflex);
+	public void addObserver(RXStimuli stimuli) {
+		observers.add(stimuli);
+	}
+
+	public void removeObserver(RXStimuli stimuli) {
+		observers.remove(stimuli);
+	}
+
+	public boolean hasObservers() {
+		return observers.size() > 0;
 	}
 
 	public void setInterestingActions(HashMap<String, String> interestingActions) {
@@ -80,11 +88,4 @@ public abstract class RXHandler {
 	 */
 	public abstract void onReceive(Context context, Intent intent);
 
-	public void removeAssociation(RXReflex reflex) {
-		associatedReflexes.remove(reflex);
-	}
-
-	public boolean hasAssociations() {
-		return associatedReflexes.size() > 0;
-	}
 }

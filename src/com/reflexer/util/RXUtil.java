@@ -8,6 +8,10 @@ import java.util.List;
 
 public class RXUtil {
 
+	public static boolean isDebugMode = true;
+	
+	public static String APP_TAG = "REFLEXER";
+	
 	/**
 	 * Dohvaca konfigurirane WiFi mreze u Settingsima. Vraca praznu listu ako je
 	 * WiFi iskljucen.

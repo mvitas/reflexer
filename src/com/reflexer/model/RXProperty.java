@@ -4,7 +4,7 @@ import com.reflexer.database.RXDatabaseHelper;
 
 import android.content.ContentValues;
 
-public class RXProperty {
+public abstract class RXProperty {
 
 	/**
 	 * id from database
@@ -19,7 +19,7 @@ public class RXProperty {
 	private Object value;
 
 	protected RXProperty(String name, Object value){
-		this.setId(-1);
+		this.setId(RXDatabaseHelper.NEW_ITEM);
 		this.setName(name);
 		this.setValue(value);
 	}
@@ -58,15 +58,7 @@ public class RXProperty {
 	 * Creates CVs for "id", "name" and "value"
 	 * @return
 	 */
-	protected ContentValues toContentValues(){
-		ContentValues cv = new ContentValues();
-		if (getId() != -1){
-			cv.put(RXDatabaseHelper.COLUMN_RXPROPERTY_ID, getId());
-		}
-		cv.put(RXDatabaseHelper.COLUMN_RXPROPERTY_NAME, getName());
-		cv.put(RXDatabaseHelper.COLUMN_RXPROPERTY_VALUE, getValue().toString());
-		
-		return cv;
-	}
+	public abstract ContentValues toContentValues();
+	
 
 }

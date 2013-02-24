@@ -1,7 +1,13 @@
 package com.reflexer.model;
 
-public class RXReflex {
+import android.content.ContentValues;
 
+import com.reflexer.database.RXDatabaseHelper;
+
+public class RXReflex {
+ 
+	private int id;
+	private String name;
 	private RXStimuli rxThis;
 	private RXReaction rxThat;
 
@@ -16,7 +22,13 @@ public class RXReflex {
 	private boolean active;
 
 	public RXReflex(RXStimuli rxThis, RXReaction rxThat) {
-		super();
+		this.setId(-1);
+		this.setRxThis(rxThis);
+		this.setRxThat(rxThat);
+	}
+	
+	public RXReflex(int id, RXStimuli rxThis, RXReaction rxThat) {
+		this.setId(id);
 		this.setRxThis(rxThis);
 		this.setRxThat(rxThat);
 	}
@@ -53,5 +65,37 @@ public class RXReflex {
 	public boolean isActive() {
 		return active;
 	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	/**
+	 * Creates CVs for "id" 
+	 * 
+	 * Params are created from the 
+	 * @return
+	 */
+	public ContentValues toContentValues(){
+		ContentValues cv = new ContentValues();
+		if (id != -1){
+			cv.put(RXDatabaseHelper.COLUMN_RX_REFLEX_ID, id);
+		}
+		cv.put(RXDatabaseHelper.COLUMN_RX_REFLEX_NAME, getName());
+		
+		return cv;
+	}
+
 
 }

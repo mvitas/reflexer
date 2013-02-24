@@ -1,5 +1,8 @@
 package com.reflexer.model;
 
+import android.content.ContentValues;
+
+import com.reflexer.database.RXDatabaseHelper;
 import com.reflexer.handler.RXHandler;
 
 import java.util.ArrayList;
@@ -7,6 +10,7 @@ import java.util.HashMap;
 
 public class RXStimuli {
 
+	private int id;
 	/**
 	 * List of all the conditions for this stimuli.
 	 */
@@ -23,7 +27,7 @@ public class RXStimuli {
 	/**
 	 * Current state of the conditions defined by this stimuli.
 	 */
-	protected HashMap<String, Object> stateMap = new HashMap<String, Object>();
+	private ArrayList<RXStimuliProperty> paramsList = new ArrayList<RXStimuliProperty>();
 
 	/**
 	 * Reaction to this stimuli.
@@ -34,6 +38,13 @@ public class RXStimuli {
 	 * Name of this stimuli.
 	 */
 	protected String name;
+	
+	public RXStimuli (){
+	}
+	
+	public RXStimuli (String name){
+		this.name = name;
+	}
 
 	public void setReaction(RXReaction reaction) {
 		this.reaction = reaction;
@@ -103,7 +114,7 @@ public class RXStimuli {
 
 		for (String conditionName : conditionsMap.keySet()) {
 			Object conditionValue = conditionsMap.get(conditionName);
-			Object currentState = stateMap.get(conditionName);
+			Object currentState = getRXParamByName(conditionName).getValue();
 
 			RXCondition condition = RXCondition.getConditionDefinitionByName(conditionName, conditionList);
 
@@ -147,8 +158,18 @@ public class RXStimuli {
 	 * @param state
 	 * @return
 	 */
-	public boolean setConditionState(String conditionName, Object state) {
-		stateMap.put(conditionName, state);
+	public boolean setConditionState(RXStimuliProperty property) {
+		boolean shouldAdd = true;
+		
+		for (RXStimuliProperty p : getParamsList()){
+			if (p.getName().equals(property.getName())){
+				p.setValue(property.getValue());
+				shouldAdd = false;
+			}
+		}
+		if (shouldAdd){
+			getParamsList().add(property);
+		}
 
 		boolean isFulfilled = isFulfilled();
 
@@ -175,5 +196,69 @@ public class RXStimuli {
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * Returns the property for the seleced id
+	 * @param id
+	 * @return
+	 */
+	public RXStimuliProperty getRXParamById(int id){
+		RXStimuliProperty property = null;
+		
+		for (RXStimuliProperty param : getParamsList()){
+			if (param.getId() == id){
+				property = param;
+			}
+		}
+		return property;
+	}
+	
+	/**
+	 * Returns the property for name
+	 * @param name
+	 * @return
+	 */
+	public RXProperty getRXParamByName(String name){
+		RXProperty property = null;
+		
+		for (RXProperty param : getParamsList()){
+			if (param.getName() == name){
+				property = param;
+			}
+		}
+		return property;
+	}
+	
+	/**
+	 * Creates CVs for "id" and "name"
+	 * 
+	 * Params are created from the 
+	 * @return
+	 */
+	public ContentValues toContentValues(){
+		ContentValues cv = new ContentValues();
+		if (getId() != -1){
+			cv.put(RXDatabaseHelper.COLUMN_RX_STIMULI_PROPERTY_ID, getId());
+		}
+		cv.put(RXDatabaseHelper.COLUMN_RX_STIMULI_PROPERTY_NAME, name);
+		
+		return cv;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public ArrayList<RXStimuliProperty> getParamsList() {
+		return paramsList;
+	}
+
+	public void setParamsList(ArrayList<RXStimuliProperty> paramsList) {
+		this.paramsList = paramsList;
 	}
 }

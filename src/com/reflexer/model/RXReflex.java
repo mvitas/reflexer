@@ -21,14 +21,16 @@ public class RXReflex {
 	 */
 	private boolean active;
 
-	public RXReflex(RXStimuli rxThis, RXReaction rxThat) {
+	public RXReflex(String name, RXStimuli rxThis, RXReaction rxThat) {
 		this.setId(-1);
+		this.name = name;
 		this.setRxThis(rxThis);
 		this.setRxThat(rxThat);
 	}
 	
-	public RXReflex(int id, RXStimuli rxThis, RXReaction rxThat) {
+	public RXReflex(int id, String name, RXStimuli rxThis, RXReaction rxThat) {
 		this.setId(id);
+		this.name = name;
 		this.setRxThis(rxThis);
 		this.setRxThat(rxThat);
 	}

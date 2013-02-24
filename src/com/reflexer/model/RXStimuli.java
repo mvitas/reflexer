@@ -174,7 +174,7 @@ public class RXStimuli {
 		boolean isFulfilled = isFulfilled();
 
 		if (isFulfilled) {
-
+			
 		}
 
 		return isFulfilled;
@@ -239,9 +239,9 @@ public class RXStimuli {
 	public ContentValues toContentValues(){
 		ContentValues cv = new ContentValues();
 		if (getId() != -1){
-			cv.put(RXDatabaseHelper.COLUMN_RX_STIMULI_PROPERTY_ID, getId());
+			cv.put(RXDatabaseHelper.COLUMN_STIMULUS_ID, getId());
 		}
-		cv.put(RXDatabaseHelper.COLUMN_RX_STIMULI_PROPERTY_NAME, name);
+		cv.put(RXDatabaseHelper.COLUMN_SIMULUS_ACTION_NAME, name);
 		
 		return cv;
 	}

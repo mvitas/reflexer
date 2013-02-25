@@ -168,6 +168,7 @@ public class MainActivity extends Activity {
 
 			RXStimuli stimuli = new RXStimuli(MainActivity.this, "WiFiStimuli");
 			stimuli.setCondition(new RXStimuliCondition("connected", Boolean.TRUE));
+			stimuli.setCondition(new RXStimuliCondition("network-name", "AlbisWLAN"));
 
 			RXReaction reaction = RXReaction.createReaction(MainActivity.this, "TestReaction");
 			reaction.addParam(new RXReactionProperty("output", "testing output from TestReaction"));

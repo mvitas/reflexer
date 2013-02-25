@@ -1,130 +1,210 @@
 package com.reflexer.model;
 
-import java.util.ArrayList;
-
 import android.content.ContentValues;
+import android.content.Context;
 
 import com.reflexer.database.RXDatabaseHelper;
+import com.reflexer.model.parser.RXReactionDefinitionParser;
+
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public abstract class RXReaction {
 
-	/** 
-	 * Id from database
-	 */
-	private int id;  
-	
 	/**
-	 * RxReaction name
+	 * Path of the reaction XML definitions in assets folder.
 	 */
-	protected String name; 
-	
-	protected ArrayList<RXReactionProperty> paramsList;
+	private static final String REACTIONS_PATH = "reactions";
 
 	/**
-	 * Parameters for the action, based on the Property definition
+	 * ID of this reaction in the database.
 	 */
-	public abstract ArrayList<RXPropertyDefinition> getRXPropertyDefinitionList();
-	
-	public abstract void setRXPropertyDefinitionList(ArrayList<RXPropertyDefinition> readProperties);
-	
-	public RXReaction(String name){
-		this.setId(-1);
-		this.name = name;
-		this.paramsList = new ArrayList<RXReactionProperty>();
+	private int id;
+
+	/**
+	 * Meta data that contains definitions of all the properties for this
+	 * reaction.
+	 */
+	private RXReactionDefinition definition;
+
+	/**
+	 * State of properties defined by user.
+	 */
+	private ArrayList<RXReactionProperty> paramList = new ArrayList<RXReactionProperty>();
+
+	/**
+	 * Holds array of all the RXReaction definitions read from XML files in
+	 * assets.
+	 */
+	private static ArrayList<RXReactionDefinition> reactionDefinitions;
+
+	public static ArrayList<RXReactionDefinition> getReactionDefinitions(Context context) throws IOException {
+		if (reactionDefinitions == null) {
+			loadReactions(context);
+		}
+
+		return reactionDefinitions;
 	}
 
-	public RXReaction(int id, String name){
-		this.setId(id);
-		this.name = name;
-		this.paramsList = new ArrayList<RXReactionProperty>();
+	private static RXReactionDefinition getReactionDefinitionByName(Context context, String name) {
+		try {
+			ArrayList<RXReactionDefinition> definitions = getReactionDefinitions(context);
+
+			for (int i = 0; i < definitions.size(); i++) {
+				if (definitions.get(i).getName().equals(name)) {
+					return definitions.get(i);
+				}
+			}
+		} catch (IOException e) {
+			throw new IllegalStateException("Error reading reaction definitions", e);
+		}
+
+		throw new IllegalArgumentException("There is no definition for reaction with name: " + name);
 	}
-	
-	public RXReaction(int id, String name, ArrayList<RXReactionProperty> paramsList){
-		this.setId(id);
-		this.name = name;
-		this.paramsList = paramsList;
+
+	protected RXReactionProperty getParamByName(String name) {
+		for (int i = 0; i < paramList.size(); i++) {
+			if (paramList.get(i).getName().equals(name)) {
+				return paramList.get(i);
+			}
+		}
+
+		return null;
 	}
-	
-	public String getName() {
-		return name;
+
+	private static void loadReactions(Context context) throws IOException {
+		String[] reactionFileList = context.getAssets().list(REACTIONS_PATH);
+
+		RXReactionDefinitionParser parser = new RXReactionDefinitionParser();
+		reactionDefinitions = new ArrayList<RXReactionDefinition>();
+
+		for (int i = 0; i < reactionFileList.length; i++) {
+			try {
+				reactionDefinitions.add(parser.parse(context.getAssets().open(
+						REACTIONS_PATH + "/" + reactionFileList[i])));
+			} catch (XmlPullParserException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
+
+	public static RXReaction createReaction(Context context, String name) {
+		return createReaction(context, RXDatabaseHelper.NEW_ITEM, name);
+	}
+
+	public static RXReaction createReaction(Context context, int id, String name) {
+		return createReaction(context, id, name, new ArrayList<RXReactionProperty>());
+	}
+
+	public static RXReaction createReaction(Context context, int id, String name,
+			ArrayList<RXReactionProperty> propertyList) {
+		RXReactionDefinition definition = getReactionDefinitionByName(context, name);
+		Class<? extends RXReaction> reactionClass = definition.getReactionClass();
+
+		RXReaction reaction = null;
+		try {
+			reaction = reactionClass.newInstance();
+			reaction.id = id;
+			reaction.definition = definition;
+			reaction.paramList = propertyList;
+		} finally {
+			return reaction;
+		}
+	}
+
 	/**
 	 * Adds the property to the list of properties
 	 * 
-	 * Checks if the param already exists - then it updates it
-	 * If it doesn't exist it adds it to the list
+	 * Checks if the param already exists - then it updates it If it doesn't
+	 * exist it adds it to the list
+	 * 
 	 * @param param
 	 */
-	public void addRXParam(RXReactionProperty param){
+	public void addParam(RXReactionProperty param) {
 		boolean shouldAdd = true;
-		
-		for (RXReactionProperty p : paramsList){
-			if (p.getName().equals(param.getName())){
+
+		for (RXReactionProperty p : paramList) {
+			if (p.getName().equals(param.getName())) {
 				p.setValue(param.getValue());
 				shouldAdd = false;
 			}
 		}
-		if (shouldAdd){
-			paramsList.add(param);
+		if (shouldAdd) {
+			paramList.add(param);
 		}
 	}
-	
+
+	public RXReactionDefinition getDefinition() {
+		return definition;
+	}
+
 	/**
 	 * Returns the property for the seleced id
+	 * 
 	 * @param id
 	 * @return
 	 */
-	public RXProperty getRXParamById(int id){
+	public RXProperty getRXParamById(int id) {
 		RXProperty property = null;
-		
-		for (RXProperty param : paramsList){
-			if (param.getId() == id){
+
+		for (RXProperty param : paramList) {
+			if (param.getId() == id) {
 				property = param;
 			}
 		}
 		return property;
 	}
-	
+
 	/**
 	 * Returns the property for name
+	 * 
 	 * @param name
 	 * @return
 	 */
-	public RXProperty getRXParamByName(String name){
+	public RXProperty getRXParamByName(String name) {
 		RXProperty property = null;
-		
-		for (RXProperty param : paramsList){
-			if (param.getName() == name){
+
+		for (RXProperty param : paramList) {
+			if (param.getName() == name) {
 				property = param;
 			}
 		}
 		return property;
 	}
-	
+
 	/**
 	 * Get all params
+	 * 
 	 * @return
 	 */
-	public ArrayList<RXReactionProperty> getParamList(){
-		return paramsList;
+	public ArrayList<RXReactionProperty> getParamList() {
+		return paramList;
 	}
-	
+
 	public abstract void execute();
 
 	/**
 	 * Creates CVs for "id" and "name"
 	 * 
-	 * Params are created from the 
+	 * Params are created from the
+	 * 
 	 * @return
 	 */
-	public ContentValues toContentValues(){
+	public ContentValues toContentValues() {
 		ContentValues cv = new ContentValues();
-		if (getId() != -1){
+		if (getId() != -1) {
 			cv.put(RXDatabaseHelper.COLUMN_REACTION_ID, getId());
 		}
-		cv.put(RXDatabaseHelper.COLUMN_REACTION_NAME, name);
-		
+		cv.put(RXDatabaseHelper.COLUMN_REACTION_NAME, definition.getName());
+
 		return cv;
 	}
 

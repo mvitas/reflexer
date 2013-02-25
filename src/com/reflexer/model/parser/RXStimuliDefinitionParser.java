@@ -3,8 +3,8 @@ package com.reflexer.model.parser;
 import android.util.Xml;
 
 import com.reflexer.handler.RXHandler;
-import com.reflexer.model.RXCondition;
-import com.reflexer.model.RXStimuli;
+import com.reflexer.model.RXConditionDefinition;
+import com.reflexer.model.RXStimuliDefinition;
 import com.reflexer.util.RXTypes;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RXStimuliParser {
+public class RXStimuliDefinitionParser {
 
 	/**
 	 * XML namespaces are not used.
@@ -24,9 +24,9 @@ public class RXStimuliParser {
 
 	private static final String STIMULI_TAG = "stimuli";
 
-	private static final String HANDLER_TAG = "handler";
-
 	private static final String INTERESTED_IN_TAG = "interested-in";
+
+	private static final String HANDLER_TAG = "handler";
 
 	private static final String CONDITIONS_TAG = "conditions";
 
@@ -44,8 +44,8 @@ public class RXStimuliParser {
 
 	private static final String REQUIRED_ATTRIBUTE = "required";
 
-	public RXStimuli parse(InputStream in) throws XmlPullParserException, IOException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
+	public RXStimuliDefinition parse(InputStream in) throws XmlPullParserException, IOException,
+			InstantiationException, IllegalAccessException, ClassNotFoundException {
 		XmlPullParser parser = Xml.newPullParser();
 		parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
 		parser.setInput(in, null);
@@ -53,9 +53,9 @@ public class RXStimuliParser {
 		return readStimuli(parser);
 	}
 
-	private RXStimuli readStimuli(XmlPullParser parser) throws XmlPullParserException, IOException,
+	private RXStimuliDefinition readStimuli(XmlPullParser parser) throws XmlPullParserException, IOException,
 			InstantiationException, IllegalAccessException, ClassNotFoundException {
-		RXStimuli stimuli = new RXStimuli();
+		RXStimuliDefinition stimuli = new RXStimuliDefinition();
 
 		parser.require(XmlPullParser.START_TAG, ns, STIMULI_TAG);
 
@@ -70,8 +70,8 @@ public class RXStimuliParser {
 		}
 
 		stimuli.setName(name);
-		stimuli.setRXHandler(readHandler(parser));
-		stimuli.setConditionList(readConditions(parser));
+		stimuli.setHandler(readHandler(parser));
+		stimuli.setConditionDefinitions(readConditions(parser));
 
 		return stimuli;
 	}
@@ -80,6 +80,7 @@ public class RXStimuliParser {
 			InstantiationException, IllegalAccessException, ClassNotFoundException {
 		RXHandler handler;
 
+		parser.nextTag();
 		parser.require(XmlPullParser.START_TAG, ns, HANDLER_TAG);
 
 		int attributeCount = parser.getAttributeCount();
@@ -103,7 +104,8 @@ public class RXStimuliParser {
 	private HashMap<String, String> readInterestedIn(XmlPullParser parser) throws XmlPullParserException, IOException {
 		HashMap<String, String> interestingActions = new HashMap<String, String>();
 
-		while (parser.next() == XmlPullParser.START_TAG) {
+		while (parser.nextTag() == XmlPullParser.START_TAG) {
+
 			parser.require(XmlPullParser.START_TAG, ns, INTERESTED_IN_TAG);
 
 			String alias = null;
@@ -129,14 +131,15 @@ public class RXStimuliParser {
 		return interestingActions;
 	}
 
-	private ArrayList<RXCondition> readConditions(XmlPullParser parser) throws XmlPullParserException, IOException {
-		ArrayList<RXCondition> conditionList = new ArrayList<RXCondition>();
-		HashMap<String, RXCondition> dependencyMap = new HashMap<String, RXCondition>();
+	private ArrayList<RXConditionDefinition> readConditions(XmlPullParser parser) throws XmlPullParserException,
+			IOException {
+		ArrayList<RXConditionDefinition> conditionList = new ArrayList<RXConditionDefinition>();
+		HashMap<String, RXConditionDefinition> dependencyMap = new HashMap<String, RXConditionDefinition>();
 
-		parser.next();
+		parser.nextTag();
 		parser.require(XmlPullParser.START_TAG, ns, CONDITIONS_TAG);
 
-		while (parser.next() == XmlPullParser.START_TAG) {
+		while (parser.nextTag() == XmlPullParser.START_TAG) {
 			ConditionDependencyMap depMap = readCondition(parser);
 			conditionList.add(depMap.condition);
 
@@ -145,7 +148,6 @@ public class RXStimuliParser {
 			}
 		}
 
-		parser.next();
 		parser.require(XmlPullParser.END_TAG, ns, CONDITIONS_TAG);
 
 		assignDependencies(conditionList, dependencyMap);
@@ -153,9 +155,11 @@ public class RXStimuliParser {
 		return conditionList;
 	}
 
-	private void assignDependencies(ArrayList<RXCondition> conditionList, HashMap<String, RXCondition> dependencyMap) {
+	private void assignDependencies(ArrayList<RXConditionDefinition> conditionList,
+			HashMap<String, RXConditionDefinition> dependencyMap) {
 		for (String conditionName : dependencyMap.keySet()) {
-			RXCondition condition = RXCondition.getConditionDefinitionByName(conditionName, conditionList);
+			RXConditionDefinition condition = RXConditionDefinition.getConditionDefinitionByName(conditionName,
+					conditionList);
 			dependencyMap.get(conditionName).addDependency(condition);
 		}
 	}
@@ -184,10 +188,9 @@ public class RXStimuliParser {
 		int type = RXTypes.fromString(typeString);
 		boolean required = Boolean.parseBoolean(requiredString);
 
-		depMap.condition = new RXCondition(required, name, type);
+		depMap.condition = new RXConditionDefinition(required, name, type);
 		depMap.dependsOn = readDependencies(parser);
 
-		parser.next();
 		parser.require(XmlPullParser.END_TAG, ns, CONDITION_TAG);
 
 		return depMap;
@@ -196,7 +199,11 @@ public class RXStimuliParser {
 	private ArrayList<String> readDependencies(XmlPullParser parser) throws XmlPullParserException, IOException {
 		ArrayList<String> dependencies = new ArrayList<String>();
 
-		while (parser.next() == XmlPullParser.START_TAG) {
+		while (parser.nextTag() == XmlPullParser.START_TAG) {
+			if (!parser.getName().equals(DEPENDS_ON_TAG)) {
+				break;
+			}
+
 			parser.require(XmlPullParser.START_TAG, ns, DEPENDS_ON_TAG);
 
 			parser.next();
@@ -205,14 +212,14 @@ public class RXStimuliParser {
 			dependencies.add(parser.getText());
 
 			parser.next();
-			parser.require(XmlPullParser.END_TAG, ns, INTERESTED_IN_TAG);
+			parser.require(XmlPullParser.END_TAG, ns, DEPENDS_ON_TAG);
 		}
 
 		return dependencies;
 	}
 
 	private static class ConditionDependencyMap {
-		public RXCondition condition;
+		public RXConditionDefinition condition;
 		public ArrayList<String> dependsOn;
 	}
 }

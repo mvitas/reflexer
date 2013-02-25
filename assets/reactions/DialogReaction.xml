@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<reaction name="DialogReaction" class="com.bla.Reaction">
+<reaction name="DialogReaction" class="com.reflexer.model.reaction.RXDialogReaction">
   <properties>
-    <property name="" type="" required=true/false />
+    <property name="title" type="rx-string" required="false" />
+    <property name="text" type="rx-string" required="false" />
   </properties>
 </reaction>

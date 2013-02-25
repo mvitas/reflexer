@@ -1,19 +1,20 @@
 package com.reflexer.model.parser;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.util.Xml;
 
 import com.reflexer.model.RXPropertyDefinition;
 import com.reflexer.model.RXReaction;
+import com.reflexer.model.RXReactionDefinition;
 import com.reflexer.util.RXTypes;
 
-public class RXReactionParser {
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+public class RXReactionDefinitionParser {
 
 	/**
 	 * XML namespaces are not used.
@@ -34,8 +35,8 @@ public class RXReactionParser {
 
 	private static final String REQUIRED_ATTRIBUTE = "required";
 
-	public RXReaction parse(InputStream in) throws XmlPullParserException, IOException, ClassNotFoundException,
-			InstantiationException, IllegalAccessException {
+	public RXReactionDefinition parse(InputStream in) throws XmlPullParserException, IOException,
+			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		XmlPullParser parser = Xml.newPullParser();
 		parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
 		parser.setInput(in, null);
@@ -43,9 +44,9 @@ public class RXReactionParser {
 		return readReaction(parser);
 	}
 
-	private RXReaction readReaction(XmlPullParser parser) throws XmlPullParserException, IOException,
+	private RXReactionDefinition readReaction(XmlPullParser parser) throws XmlPullParserException, IOException,
 			ClassNotFoundException, InstantiationException, IllegalAccessException {
-		RXReaction reaction;
+		RXReactionDefinition reaction = new RXReactionDefinition();
 
 		parser.require(XmlPullParser.START_TAG, ns, REACTION_TAG);
 
@@ -61,27 +62,28 @@ public class RXReactionParser {
 
 		@SuppressWarnings("unchecked")
 		Class<? extends RXReaction> reactionClass = (Class<? extends RXReaction>) Class.forName(className);
-		reaction = reactionClass.newInstance();
 
-		reaction.setRXPropertyDefinitionList(readProperties(parser));
+		reaction.setReactionClass(reactionClass);
+		reaction.setPropertyDefinitions(readProperties(parser));
 
-		parser.next();
+		parser.nextTag();
 		parser.require(XmlPullParser.END_TAG, ns, REACTION_TAG);
 
 		return reaction;
 	}
 
-	private ArrayList<RXPropertyDefinition> readProperties(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private ArrayList<RXPropertyDefinition> readProperties(XmlPullParser parser) throws XmlPullParserException,
+			IOException {
 		ArrayList<RXPropertyDefinition> properties = new ArrayList<RXPropertyDefinition>();
 
-		parser.next();
+		parser.nextTag();
 		parser.require(XmlPullParser.START_TAG, ns, PROPERTIES_TAG);
 
-		while (parser.next() == XmlPullParser.START_TAG) {
+		while (parser.nextTag() == XmlPullParser.START_TAG) {
 			properties.add(readProperty(parser));
 		}
 
-		parser.next();
+		parser.nextTag();
 		parser.require(XmlPullParser.END_TAG, ns, PROPERTIES_TAG);
 		return properties;
 	}

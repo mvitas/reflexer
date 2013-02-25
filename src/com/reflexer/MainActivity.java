@@ -1,23 +1,31 @@
 package com.reflexer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 
 import com.reflexer.database.RXDatabaseHelper;
+import com.reflexer.model.RXReaction;
 import com.reflexer.model.RXReactionProperty;
 import com.reflexer.model.RXReflex;
 import com.reflexer.model.RXStimuli;
-import com.reflexer.model.RXStimuliProperty;
+import com.reflexer.model.RXStimuliCondition;
 import com.reflexer.model.reaction.RXWifiReaction;
+import com.reflexer.service.RXBinder;
+import com.reflexer.service.RXService;
 import com.reflexer.util.RXUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -28,26 +36,25 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		Intent serviceIntent = new Intent(this, RXService.class);
+		startService(serviceIntent);
+
 		// WifiManager wifiManager =
 		// (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		// configuredNetworks = wifiManager.getConfiguredNetworks();
 		//
 		// Log.d("Reflexer", "configured networks: " + configuredNetworks);
 
-		RXDatabaseHelper helper = new RXDatabaseHelper(this, "reflexer", null,
-				1);
+		RXDatabaseHelper helper = new RXDatabaseHelper(this, "reflexer", null, 1);
 		SQLiteDatabase writeableDatabase = helper.getWritableDatabase();
 
-		Cursor cur = writeableDatabase.rawQuery(
-				"SELECT * FROM rx_stimuli_property;", null);
+		Cursor cur = writeableDatabase.rawQuery("SELECT * FROM rx_stimuli_property;", null);
 		cur.moveToFirst();
 
-		Cursor cur3 = writeableDatabase.rawQuery("SELECT * FROM rx_reflex;",
-				null);
+		Cursor cur3 = writeableDatabase.rawQuery("SELECT * FROM rx_reflex;", null);
 		cur3.moveToFirst();
 
-		Cursor cur4 = writeableDatabase.rawQuery("SELECT * FROM rx_stimuli;",
-				null);
+		Cursor cur4 = writeableDatabase.rawQuery("SELECT * FROM rx_stimuli;", null);
 		cur4.moveToFirst();
 
 		// try {
@@ -84,40 +91,41 @@ public class MainActivity extends Activity {
 
 		// STIMULI
 
-		RXStimuli stimuli = new RXStimuli("wifi connectivity change");
+		RXStimuli stimuli = new RXStimuli(this, "WiFiStimuli");
 
-		RXStimuliProperty s1 = new RXStimuliProperty("connected", "on");
-		RXStimuliProperty s2 = new RXStimuliProperty("beautiful", "vitas");
+		RXStimuliCondition s1 = new RXStimuliCondition("connected", "on");
+		RXStimuliCondition s2 = new RXStimuliCondition("beautiful", "vitas");
 
-		ArrayList<RXStimuliProperty> stimuliPropertyList = new ArrayList<RXStimuliProperty>();
+		ArrayList<RXStimuliCondition> stimuliConditionList = new ArrayList<RXStimuliCondition>();
 
-		stimuliPropertyList.add(s1);
-		stimuliPropertyList.add(s2);
+		stimuliConditionList.add(s1);
+		stimuliConditionList.add(s2);
 
-		stimuli.setParamsList(stimuliPropertyList);
+		stimuli.setConditionList(stimuliConditionList);
 		// END STIMULI
 
 		// REACTION
 		// ovo nece biti wifi reaction
-		RXWifiReaction wifiReaction = new RXWifiReaction(
+		RXWifiReaction wifiReaction = (RXWifiReaction) RXReaction.createReaction(this,
 				"email ili odmah tu napisat com.android.intent.ACTION_SEND");
 
-		RXReactionProperty p1 = new RXReactionProperty("to",
-				"[\"mv@gmail.com\"]");
-		RXReactionProperty p2 = new RXReactionProperty("cc",
-				"[\"ik@gmail.com\", \"dp@gmail.com\"]");
-		RXReactionProperty p3 = new RXReactionProperty("title",
-				"xyz naslov je je");
+		RXReactionProperty p1 = new RXReactionProperty("to", "[\"mv@gmail.com\"]");
+		RXReactionProperty p2 = new RXReactionProperty("cc", "[\"ik@gmail.com\", \"dp@gmail.com\"]");
+		RXReactionProperty p3 = new RXReactionProperty("title", "xyz naslov je je");
 
-		wifiReaction.addRXParam(p1);
-		wifiReaction.addRXParam(p2);
-		wifiReaction.addRXParam(p3);
+		wifiReaction.addParam(p1);
+		wifiReaction.addParam(p2);
+		wifiReaction.addParam(p3);
 
 		// END REACTION
 
 		// REFLEX
 
-		RXReflex reflex = new RXReflex("reflexcina", stimuli, wifiReaction);
+		RXReflex reflex = new RXReflex(stimuli, wifiReaction); // new
+																// RXReflex(this,
+																// "reflexcina",
+																// stimuli,
+																// wifiReaction);
 
 		// END REFLEX
 
@@ -130,24 +138,64 @@ public class MainActivity extends Activity {
 		if (rawQuery != null) {
 			while (rawQuery.moveToNext()) {
 				StringBuilder sb = new StringBuilder();
-				for (int i = 0; i<12; i++){
-					if (i<4){
+				for (int i = 0; i < 12; i++) {
+					if (i < 4) {
 						sb.append("REFLEX ").append(rawQuery.getString(i)).append("\n");
-					} else if (i>=4 && i < 7){
+					} else if (i >= 4 && i < 7) {
 						sb.append("STIMULI PROPERTY ").append(rawQuery.getString(i)).append("\n");
-					} else if (i == 7){
+					} else if (i == 7) {
 						sb.append("STIMULI ").append(rawQuery.getString(i)).append("\n");
-					} else if (i> 7 && i < 11){
+					} else if (i > 7 && i < 11) {
 						sb.append("RXPROPERTY ").append(rawQuery.getString(i)).append("\n");
 					} else {
 						sb.append("REACTION ").append(rawQuery.getString(i)).append("\n");
 					}
 				}
-				Log.d(RXUtil.APP_TAG, sb.toString() );
+				Log.d(RXUtil.APP_TAG, sb.toString());
 				Log.d(RXUtil.APP_TAG, "\n \n \n new elem");
 			}
 		}
 
+	}
+
+	private RXBinder serviceBinder;
+
+	private final ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			Log.d("Reflexer", "onServiceConnected");
+			serviceBinder = ((RXBinder) binder);
+
+			RXStimuli stimuli = new RXStimuli(MainActivity.this, "WiFiStimuli");
+			stimuli.setCondition(new RXStimuliCondition("connected", Boolean.TRUE));
+
+			RXReaction reaction = RXReaction.createReaction(MainActivity.this, "TestReaction");
+			reaction.addParam(new RXReactionProperty("output", "testing output from TestReaction"));
+
+			RXReflex reflex = new RXReflex(stimuli, reaction);
+
+			serviceBinder.addReflex(reflex);
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName className) {
+			serviceBinder = null;
+		}
+	};
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		bindService(new Intent(this, RXService.class), mConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		unbindService(mConnection);
 	}
 
 	@Override

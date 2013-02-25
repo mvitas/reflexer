@@ -148,6 +148,9 @@
         <!-- </intent-filter> -->
         <!-- </receiver> -->
 
+        <service android:name="com.reflexer.service.RXService" >
+        </service>
+
         <activity
             android:name="com.reflexer.MainActivity"
             android:label="@string/app_name" >

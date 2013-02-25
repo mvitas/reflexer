@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.reflexer.handler.RXHandler;
+import com.reflexer.model.RXStimuli;
+import com.reflexer.model.RXStimuliDefinition;
 import com.reflexer.service.RXService;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class RXReceiver extends BroadcastReceiver {
@@ -24,8 +28,16 @@ public class RXReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, final Intent intent) {
-		for (int i = 0; i < service.getHandlers().size(); i++) {
-			final RXHandler handler = service.getHandlers().get(i);
+		ArrayList<RXStimuliDefinition> definitions = null;
+		try {
+			definitions = RXStimuli.getStimuliDefinitions(service);
+		} catch (IOException e) {
+			// TODO: notify service
+			return;
+		}
+
+		for (int i = 0; i < definitions.size(); i++) {
+			final RXHandler handler = definitions.get(i).getHandler();
 
 			if (handler.isInterestingAction(intent.getAction())) {
 				executor.execute(new Runnable() {

@@ -13,7 +13,7 @@ import com.reflexer.model.RXReaction;
 import com.reflexer.model.RXReactionProperty;
 import com.reflexer.model.RXReflex;
 import com.reflexer.model.RXStimuli;
-import com.reflexer.model.RXStimuliProperty;
+import com.reflexer.model.RXStimuliCondition;
 import com.reflexer.util.RXUtil;
 
 public class RXDatabaseHelper extends SQLiteOpenHelper {
@@ -33,13 +33,8 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_REACTION_NAME = "rx_reaction_name";
 	public static final String COLUMN_REACTION_ID = "rx_reaction_id";
 
-	private static final String CREATE_RXREACTION = "CREATE TABLE IF NOT EXISTS "
-			+ TABLE_RXREACTION
-			+ " ("
-			+ COLUMN_REACTION_ID
-			+ " integer primary key autoincrement, "
-			+ COLUMN_REACTION_NAME
-			+ " text not null)";
+	private static final String CREATE_RXREACTION = "CREATE TABLE IF NOT EXISTS " + TABLE_RXREACTION + " ("
+			+ COLUMN_REACTION_ID + " integer primary key autoincrement, " + COLUMN_REACTION_NAME + " text not null)";
 
 	/*
 	 * RX_REACTION_PROPERTY
@@ -50,23 +45,11 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	public static String COLUMN_RXPROPERTY_VALUE = "rx_property_value";
 	public static final String COLUMN_RX_REACTION_ID = "fk_rx_reaction";
 
-	private static final String CREATE_RX_REACTION_PROPERTY = "create table IF NOT EXISTS "
-			+ TABLE_RXPROPERTY
-			+ " ("
-			+ COLUMN_RXPROPERTY_ID
-			+ " integer primary key autoincrement, "
-			+ COLUMN_RX_REACTION_ID
-			+ " integer, "
-			+ COLUMN_RXPROPERTY_NAME
-			+ " text not null, "
-			+ COLUMN_RXPROPERTY_VALUE
-			+ " text, "
-			+ "FOREIGN KEY ("
-			+ COLUMN_RX_REACTION_ID
-			+ ") REFERENCES "
-			+ TABLE_RXREACTION
-			+ "( "
-			+ COLUMN_REACTION_ID + " ) ON DELETE CASCADE)";
+	private static final String CREATE_RX_REACTION_PROPERTY = "create table IF NOT EXISTS " + TABLE_RXPROPERTY + " ("
+			+ COLUMN_RXPROPERTY_ID + " integer primary key autoincrement, " + COLUMN_RX_REACTION_ID + " integer, "
+			+ COLUMN_RXPROPERTY_NAME + " text not null, " + COLUMN_RXPROPERTY_VALUE + " text, " + "FOREIGN KEY ("
+			+ COLUMN_RX_REACTION_ID + ") REFERENCES " + TABLE_RXREACTION + "( " + COLUMN_REACTION_ID
+			+ " ) ON DELETE CASCADE)";
 
 	/*
 	 * RX_STIMULI
@@ -76,12 +59,9 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_SIMULUS_ACTION_NAME = "rx_stimulus_action_name";
 	private static final String COLUMN_ACTION_STATE_VALUE = "rx_stimulus_action_state_value";
 
-	private static final String CREATE_RX_STIMULI = "create table IF NOT EXISTS "
-			+ TABLE_RX_STIMULI
-			+ " ("
-			+ COLUMN_STIMULUS_ID
-			+ " integer primary key autoincrement, "
-			+ COLUMN_SIMULUS_ACTION_NAME + " text not null)";
+	private static final String CREATE_RX_STIMULI = "create table IF NOT EXISTS " + TABLE_RX_STIMULI + " ("
+			+ COLUMN_STIMULUS_ID + " integer primary key autoincrement, " + COLUMN_SIMULUS_ACTION_NAME
+			+ " text not null)";
 
 	/*
 	 * RX_STIMULI_PROPERTY
@@ -92,24 +72,11 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	public static String COLUMN_RX_STIMULI_PROPERTY_VALUE = "rx_stimuli_property_value";
 	public static final String COLUMN_RX_STIUMLI_ID = "fk_rx_stimuli";
 
-	private static final String CREATE_RX_STIMULI_PROPERTY = "create table IF NOT EXISTS "
-			+ TABLE_RX_STIMULI_PROPERTY
-			+ " ("
-			+ COLUMN_RX_STIMULI_PROPERTY_ID
-			+ " integer primary key autoincrement, "
-			+ COLUMN_RX_STIUMLI_ID
-			+ " integer, "
-			+ COLUMN_RX_STIMULI_PROPERTY_NAME
-			+ " text not null, "
-			+ COLUMN_RX_STIMULI_PROPERTY_VALUE
-			+ " text, "
-			+ "FOREIGN KEY ("
-			+ COLUMN_RX_STIUMLI_ID
-			+ ") REFERENCES "
-			+ TABLE_RX_STIMULI
-			+ "( "
-			+ COLUMN_STIMULUS_ID
-			+ " ) ON DELETE CASCADE)";
+	private static final String CREATE_RX_STIMULI_PROPERTY = "create table IF NOT EXISTS " + TABLE_RX_STIMULI_PROPERTY
+			+ " (" + COLUMN_RX_STIMULI_PROPERTY_ID + " integer primary key autoincrement, " + COLUMN_RX_STIUMLI_ID
+			+ " integer, " + COLUMN_RX_STIMULI_PROPERTY_NAME + " text not null, " + COLUMN_RX_STIMULI_PROPERTY_VALUE
+			+ " text, " + "FOREIGN KEY (" + COLUMN_RX_STIUMLI_ID + ") REFERENCES " + TABLE_RX_STIMULI + "( "
+			+ COLUMN_STIMULUS_ID + " ) ON DELETE CASCADE)";
 
 	/*
 	 * RX_REFLEX
@@ -118,33 +85,14 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_RX_REFLEX_ID = "rx_reflex_id";
 	public static final String COLUMN_RX_REFLEX_NAME = "rx_reflex_name";
 
-	private static final String CREATE_RX_REFLEX = "create table IF NOT EXISTS "
-			+ TABLE_RX_REFLEX
-			+ " ("
-			+ COLUMN_RX_REFLEX_ID
-			+ " integer primary key autoincrement, "
-			+ COLUMN_RX_STIUMLI_ID
-			+ " integer not null, "
-			+ COLUMN_RX_REACTION_ID
-			+ " integer not null, "
-			+ COLUMN_RX_REFLEX_NAME
-			+ " text not null, "
-			+ "FOREIGN KEY ("
-			+ COLUMN_RX_STIUMLI_ID
-			+ ") REFERENCES "
-			+ TABLE_RX_STIMULI
-			+ "( "
-			+ COLUMN_STIMULUS_ID
-			+ " ) ON DELETE CASCADE, "
-			+ "FOREIGN KEY ("
-			+ COLUMN_RX_REACTION_ID
-			+ ") REFERENCES "
-			+ TABLE_RXREACTION
-			+ "( "
-			+ COLUMN_REACTION_ID + " ) ON DELETE CASCADE);";
+	private static final String CREATE_RX_REFLEX = "create table IF NOT EXISTS " + TABLE_RX_REFLEX + " ("
+			+ COLUMN_RX_REFLEX_ID + " integer primary key autoincrement, " + COLUMN_RX_STIUMLI_ID
+			+ " integer not null, " + COLUMN_RX_REACTION_ID + " integer not null, " + COLUMN_RX_REFLEX_NAME
+			+ " text not null, " + "FOREIGN KEY (" + COLUMN_RX_STIUMLI_ID + ") REFERENCES " + TABLE_RX_STIMULI + "( "
+			+ COLUMN_STIMULUS_ID + " ) ON DELETE CASCADE, " + "FOREIGN KEY (" + COLUMN_RX_REACTION_ID + ") REFERENCES "
+			+ TABLE_RXREACTION + "( " + COLUMN_REACTION_ID + " ) ON DELETE CASCADE);";
 
-	public RXDatabaseHelper(Context context, String name,
-			CursorFactory factory, int version) {
+	public RXDatabaseHelper(Context context, String name, CursorFactory factory, int version) {
 		super(context, DATABASE_NAME, factory, version);
 	}
 
@@ -174,16 +122,14 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	// **************INSERT METHODS***************
-	public int insertRxReactionProperty(SQLiteDatabase db,
-			RXReactionProperty property, int reactionId) {
+	public int insertRxReactionProperty(SQLiteDatabase db, RXReactionProperty property, int reactionId) {
 		ContentValues cv = property.toContentValues();
 		cv.put(COLUMN_RX_REACTION_ID, reactionId);
 
 		return (int) db.insertOrThrow(TABLE_RXPROPERTY, null, cv);
 	}
 
-	public int insertRxStimuliProperty(SQLiteDatabase db,
-			RXStimuliProperty property, int stimuliId) {
+	public int insertRxStimuliProperty(SQLiteDatabase db, RXStimuliCondition property, int stimuliId) {
 		ContentValues cv = property.toContentValues();
 		cv.put(COLUMN_RX_STIUMLI_ID, stimuliId);
 
@@ -191,20 +137,18 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public int insertRxStimuli(SQLiteDatabase db, RXStimuli stimuli) {
-		return (int) db.insertOrThrow(TABLE_RX_STIMULI, null,
-				stimuli.toContentValues());
+		return (int) db.insertOrThrow(TABLE_RX_STIMULI, null, stimuli.toContentValues());
 	}
 
 	public int insertRxReaction(SQLiteDatabase db, RXReaction reaction) {
-		return (int) db.insertOrThrow(TABLE_RXREACTION, null,
-				reaction.toContentValues());
+		return (int) db.insertOrThrow(TABLE_RXREACTION, null, reaction.toContentValues());
 	}
 
 	public int insertRxReflex(SQLiteDatabase db, RXReflex reflex) {
 		int reflexId = -1;
 
-		RXStimuli stimuli = reflex.getRxThis();
-		RXReaction reaction = reflex.getRxThat();
+		RXStimuli stimuli = reflex.getStimuli();
+		RXReaction reaction = reflex.getReaction();
 
 		try {
 			db.beginTransaction();
@@ -213,7 +157,7 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 			// properties which depend on stimuli
 			int stimuliId = insertRxStimuli(db, stimuli);
 
-			for (RXStimuliProperty sp : stimuli.getParamsList()) {
+			for (RXStimuliCondition sp : stimuli.getConditionList()) {
 				insertRxStimuliProperty(db, sp, stimuliId);
 			}
 
@@ -249,72 +193,61 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	// tu bi trebalo sve lijepo se brisati sa foreign key constraintima - izvuc
 	// bazu iz emulatora i probat
 	public int deleteRxReactionProperty(SQLiteDatabase db, int id) {
-		return db.delete(TABLE_RXPROPERTY, COLUMN_RXPROPERTY_ID + " = ?",
-				new String[] { String.valueOf(id) });
+		return db.delete(TABLE_RXPROPERTY, COLUMN_RXPROPERTY_ID + " = ?", new String[] { String.valueOf(id) });
 	}
 
 	public int deleteRxStimuliProperty(SQLiteDatabase db, int id) {
-		return db.delete(TABLE_RX_STIMULI_PROPERTY,
-				COLUMN_RX_STIMULI_PROPERTY_ID + " = ?",
+		return db.delete(TABLE_RX_STIMULI_PROPERTY, COLUMN_RX_STIMULI_PROPERTY_ID + " = ?",
 				new String[] { String.valueOf(id) });
 	}
 
 	public int deleteRxReaction(SQLiteDatabase db, int id) {
-		return db.delete(TABLE_RXREACTION, COLUMN_REACTION_ID + " = ?",
-				new String[] { String.valueOf(id) });
+		return db.delete(TABLE_RXREACTION, COLUMN_REACTION_ID + " = ?", new String[] { String.valueOf(id) });
 	}
 
 	public int deleteRxStimuli(SQLiteDatabase db, int id) {
-		return db.delete(TABLE_RX_STIMULI, COLUMN_STIMULUS_ID + " = ?",
-				new String[] { String.valueOf(id) });
+		return db.delete(TABLE_RX_STIMULI, COLUMN_STIMULUS_ID + " = ?", new String[] { String.valueOf(id) });
 	}
 
 	public int deleteRxReflex(SQLiteDatabase db, int id) {
-		return db.delete(TABLE_RX_REFLEX, COLUMN_RXPROPERTY_ID + " = ?",
-				new String[] { String.valueOf(id) });
+		return db.delete(TABLE_RX_REFLEX, COLUMN_RXPROPERTY_ID + " = ?", new String[] { String.valueOf(id) });
 	}
 
 	// **************UPDATE METHOD***************
 	// tu ce mozda smetati sto u content values ima i id, treba testirati
-	public int updateRxReactionProperty(SQLiteDatabase db,
-			RXReactionProperty property) {
-		return db.update(TABLE_RXPROPERTY, property.toContentValues(),
-				COLUMN_RXPROPERTY_ID + " = ?",
+	public int updateRxReactionProperty(SQLiteDatabase db, RXReactionProperty property) {
+		return db.update(TABLE_RXPROPERTY, property.toContentValues(), COLUMN_RXPROPERTY_ID + " = ?",
 				new String[] { String.valueOf(property.getId()) });
 	}
 
 	// ako je id -1 onda insertaj -- znaci treba mi jos id Stimulija --> ovu
 	// logiku cu raditi u updateStimuli
 	// ako nije -1 onda samo updateaj vrijednosti
-	public int updateRxStimuliProperty(SQLiteDatabase db,
-			RXStimuliProperty property) {
-		return db.update(TABLE_RX_STIMULI_PROPERTY, property.toContentValues(),
-				COLUMN_RX_STIMULI_PROPERTY_ID + " = ?",
+	public int updateRxStimuliProperty(SQLiteDatabase db, RXStimuliCondition property) {
+		return db.update(TABLE_RX_STIMULI_PROPERTY, property.toContentValues(), COLUMN_RX_STIMULI_PROPERTY_ID + " = ?",
 				new String[] { String.valueOf(property.getId()) });
 	}
 
 	public int updateRxReaction(SQLiteDatabase db, RXReaction reaction) {
-		return db.update(TABLE_RXREACTION, reaction.toContentValues(),
-				COLUMN_REACTION_ID + " = ?",
+		return db.update(TABLE_RXREACTION, reaction.toContentValues(), COLUMN_REACTION_ID + " = ?",
 				new String[] { String.valueOf(reaction.getId()) });
 	}
 
 	public int updateRxStimuli(SQLiteDatabase db, RXStimuli stimuli) {
-		return db.update(TABLE_RX_STIMULI, stimuli.toContentValues(),
-				COLUMN_STIMULUS_ID + " = ?",
+		return db.update(TABLE_RX_STIMULI, stimuli.toContentValues(), COLUMN_STIMULUS_ID + " = ?",
 				new String[] { String.valueOf(stimuli.getId()) });
 	}
 
 	public boolean updateRxReflex(SQLiteDatabase db, RXReflex reflex) {
 		boolean reflexUpdated = false;
 
-		RXStimuli stimuli = reflex.getRxThis();
-		RXReaction reaction = reflex.getRxThat();
+		RXStimuli stimuli = reflex.getStimuli();
+		RXReaction reaction = reflex.getReaction();
 
 		try {
 			db.beginTransaction();
 
-			for (RXStimuliProperty sp : stimuli.getParamsList()) {
+			for (RXStimuliCondition sp : stimuli.getConditionList()) {
 				if (sp.getId() == NEW_ITEM) { // this is a newly added property
 												// and therefore it has to be
 												// inserted
@@ -337,8 +270,7 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 
 			updateRxReaction(db, reaction);
 
-			if (db.update(TABLE_RX_REFLEX, reflex.toContentValues(),
-					COLUMN_RX_REFLEX_ID + " = ?",
+			if (db.update(TABLE_RX_REFLEX, reflex.toContentValues(), COLUMN_RX_REFLEX_ID + " = ?",
 					new String[] { String.valueOf(reflex.getId()) }) == 1) {
 				reflexUpdated = true;
 			}
@@ -356,24 +288,17 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 
 	public Cursor queryALLReflexs(SQLiteDatabase db) {
 		try {
-			Cursor c = db.rawQuery(" SELECT " + COLUMN_RX_REFLEX_ID + ", "
-					+ "TRF." +COLUMN_RX_STIUMLI_ID + ", " + "TRF." + COLUMN_RX_REACTION_ID
-					+ ", " + COLUMN_RX_REFLEX_NAME + ", "
-					+ COLUMN_RX_STIMULI_PROPERTY_ID + ", "
-					+ COLUMN_RX_STIMULI_PROPERTY_NAME + ", "
-					+ COLUMN_RX_STIMULI_PROPERTY_VALUE + ", "
-					+ COLUMN_SIMULUS_ACTION_NAME + ", " + COLUMN_RXPROPERTY_ID
-					+ ", " + COLUMN_RXPROPERTY_NAME + ", "
-					+ COLUMN_RXPROPERTY_VALUE 
-					+ ", " + COLUMN_REACTION_NAME + " FROM " + TABLE_RX_REFLEX  + " TRF "
-					+ " LEFT OUTER JOIN " + TABLE_RX_STIMULI + " ON "
-					+ "TRF." + COLUMN_RX_STIUMLI_ID + " = " + COLUMN_STIMULUS_ID
-					+ " LEFT OUTER JOIN " + TABLE_RXREACTION  + " TRA " + " ON "
-					+ "TRF." +COLUMN_RX_REACTION_ID + " = " + COLUMN_REACTION_ID
-					+ " LEFT OUTER JOIN " + TABLE_RX_STIMULI_PROPERTY  + " SP " + " ON "
-					+ COLUMN_STIMULUS_ID + "=" + "SP." +COLUMN_RX_STIUMLI_ID
-					+ " LEFT OUTER JOIN " + TABLE_RXPROPERTY + " TRP " + " ON "
-					+ COLUMN_REACTION_ID + "=" + "TRP." + COLUMN_RX_REACTION_ID, null);
+			Cursor c = db.rawQuery(" SELECT " + COLUMN_RX_REFLEX_ID + ", " + "TRF." + COLUMN_RX_STIUMLI_ID + ", "
+					+ "TRF." + COLUMN_RX_REACTION_ID + ", " + COLUMN_RX_REFLEX_NAME + ", "
+					+ COLUMN_RX_STIMULI_PROPERTY_ID + ", " + COLUMN_RX_STIMULI_PROPERTY_NAME + ", "
+					+ COLUMN_RX_STIMULI_PROPERTY_VALUE + ", " + COLUMN_SIMULUS_ACTION_NAME + ", "
+					+ COLUMN_RXPROPERTY_ID + ", " + COLUMN_RXPROPERTY_NAME + ", " + COLUMN_RXPROPERTY_VALUE + ", "
+					+ COLUMN_REACTION_NAME + " FROM " + TABLE_RX_REFLEX + " TRF " + " LEFT OUTER JOIN "
+					+ TABLE_RX_STIMULI + " ON " + "TRF." + COLUMN_RX_STIUMLI_ID + " = " + COLUMN_STIMULUS_ID
+					+ " LEFT OUTER JOIN " + TABLE_RXREACTION + " TRA " + " ON " + "TRF." + COLUMN_RX_REACTION_ID
+					+ " = " + COLUMN_REACTION_ID + " LEFT OUTER JOIN " + TABLE_RX_STIMULI_PROPERTY + " SP " + " ON "
+					+ COLUMN_STIMULUS_ID + "=" + "SP." + COLUMN_RX_STIUMLI_ID + " LEFT OUTER JOIN " + TABLE_RXPROPERTY
+					+ " TRP " + " ON " + COLUMN_REACTION_ID + "=" + "TRP." + COLUMN_RX_REACTION_ID, null);
 			return c;
 		} catch (Exception e) {
 			return null;

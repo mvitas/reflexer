@@ -175,7 +175,25 @@ public class MainActivity extends Activity {
 
 			RXReflex reflex = new RXReflex(stimuli, reaction);
 
+			RXStimuli batStim = new RXStimuli(MainActivity.this, "BatteryLevelStimuli");
+			batStim.setCondition(new RXStimuliCondition("level", 50));
+
+			RXReaction batRe = RXReaction.createReaction(MainActivity.this, "TestReaction");
+			batRe.addParam(new RXReactionProperty("output", "testing battery level stimuli"));
+
+			RXReflex batRef = new RXReflex(batStim, batRe);
+
+			RXStimuli pwStim = new RXStimuli(MainActivity.this, "PowerConnectedStimuli");
+			pwStim.setCondition(new RXStimuliCondition("power-connected", true));
+
+			RXReaction pwRe = RXReaction.createReaction(MainActivity.this, "TestReaction");
+			pwRe.addParam(new RXReactionProperty("output", "testing power connected stimuli"));
+
+			RXReflex pwRef = new RXReflex(pwStim, pwRe);
+
 			serviceBinder.addReflex(reflex);
+			serviceBinder.addReflex(batRef);
+			serviceBinder.addReflex(pwRef);
 		}
 
 		@Override

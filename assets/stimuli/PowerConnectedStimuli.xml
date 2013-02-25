@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<stimuli name="PowerConnectedStimuli">
+  <handler name="BatteryLevelHandler" class="com.reflexer.handler.RXPowerConnectedHandler">
+    <interested-in alias="power-connected">android.intent.action.ACTION_POWER_CONNECTED</interested-in>
+    <interested-in alias="power-disconnected">android.intent.action.ACTION_POWER_DISCONNECTED</interested-in>
+  </handler>
+  <conditions>
+    <condition name="power-connected" type="rx-bool" required="true" />
+  </conditions>
+</stimuli>

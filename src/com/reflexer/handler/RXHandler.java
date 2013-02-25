@@ -85,6 +85,20 @@ public abstract class RXHandler {
 	}
 
 	/**
+	 * Notify all registered observers about the condition state change.
+	 * 
+	 * @param conditionName
+	 *            name of the condition that has changed
+	 * @param value
+	 *            new value of the condition
+	 */
+	public void notifyConditionState(String conditionName, Object value) {
+		for (int i = 0; i < observers.size(); i++) {
+			observers.get(i).setConditionCurrentState(conditionName, value);
+		}
+	}
+
+	/**
 	 * Called when a handler
 	 * 
 	 * @param intent

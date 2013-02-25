@@ -52,10 +52,13 @@ public class RXReactionDefinitionParser {
 
 		int attributeCount = parser.getAttributeCount();
 
+		String name = null;
 		String className = null;
 
 		for (int i = 0; i < attributeCount; i++) {
-			if (parser.getAttributeName(i).equals(CLASS_ATTRIBUTE)) {
+			if (parser.getAttributeName(i).equals(NAME_ATTRIBUTE)) {
+				name = parser.getAttributeValue(i);
+			} else if (parser.getAttributeName(i).equals(CLASS_ATTRIBUTE)) {
 				className = parser.getAttributeValue(i);
 			}
 		}
@@ -63,6 +66,7 @@ public class RXReactionDefinitionParser {
 		@SuppressWarnings("unchecked")
 		Class<? extends RXReaction> reactionClass = (Class<? extends RXReaction>) Class.forName(className);
 
+		reaction.setName(name);
 		reaction.setReactionClass(reactionClass);
 		reaction.setPropertyDefinitions(readProperties(parser));
 
@@ -83,7 +87,6 @@ public class RXReactionDefinitionParser {
 			properties.add(readProperty(parser));
 		}
 
-		parser.nextTag();
 		parser.require(XmlPullParser.END_TAG, ns, PROPERTIES_TAG);
 		return properties;
 	}

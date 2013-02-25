@@ -12,11 +12,14 @@ import java.util.HashMap;
 public abstract class RXHandler {
 
 	/**
-	 * List of RXStimuli extended classes that are associated with this handler.
+	 * List of RXStimuli classes that are associated with this handler.
 	 */
-	protected ArrayList<RXStimuli> observers;
+	protected ArrayList<RXStimuli> observers = new ArrayList<RXStimuli>();
 
-	protected HashMap<String, String> interestingActions;
+	/**
+	 * List of actions that RXHandler implementation is listening to.
+	 */
+	protected HashMap<String, String> interestingActions = new HashMap<String, String>();
 
 	public void addObserver(RXStimuli stimuli) {
 		observers.add(stimuli);

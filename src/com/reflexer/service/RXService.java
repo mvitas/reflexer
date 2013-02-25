@@ -111,6 +111,7 @@ public class RXService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		reflexes = new ArrayList<RXReflex>();
 		registerBroadcastReceiver();
 
 		// TODO restore reflexes from database

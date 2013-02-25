@@ -19,7 +19,7 @@ import com.reflexer.model.RXReactionProperty;
 import com.reflexer.model.RXReflex;
 import com.reflexer.model.RXStimuli;
 import com.reflexer.model.RXStimuliCondition;
-import com.reflexer.model.reaction.RXWifiReaction;
+import com.reflexer.model.reaction.RXTestReaction;
 import com.reflexer.service.RXBinder;
 import com.reflexer.service.RXService;
 import com.reflexer.util.RXUtil;
@@ -106,8 +106,7 @@ public class MainActivity extends Activity {
 
 		// REACTION
 		// ovo nece biti wifi reaction
-		RXWifiReaction wifiReaction = (RXWifiReaction) RXReaction.createReaction(this,
-				"email ili odmah tu napisat com.android.intent.ACTION_SEND");
+		RXTestReaction wifiReaction = (RXTestReaction) RXReaction.createReaction(this, "TestReaction");
 
 		RXReactionProperty p1 = new RXReactionProperty("to", "[\"mv@gmail.com\"]");
 		RXReactionProperty p2 = new RXReactionProperty("cc", "[\"ik@gmail.com\", \"dp@gmail.com\"]");

@@ -2,9 +2,9 @@ package com.reflexer.handler;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.util.Log;
 
 public class RXWifiHandler extends RXHandler {
 
@@ -16,8 +16,11 @@ public class RXWifiHandler extends RXHandler {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		Log.d("RXWifiHandler", "onReceive( " + intent + " )");
 		if (isAction(NETWORK_STATE_CHANGED_ACTION, intent)) {
-			NetworkInfo netInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+			Log.d("RXWifiHandler", "NETWORK_STATE_CHANGED_ACTION");
+			// NetworkInfo netInfo =
+			// intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 
 			WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 			WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -26,6 +29,7 @@ public class RXWifiHandler extends RXHandler {
 				observers.get(i).setConditionCurrentState(CONDITION_NETWORK_NAME, wifiInfo.getSSID());
 			}
 		} else if (isAction(SUPPLICANT_CONNECTION_CHANGE_ACTION, intent)) {
+			Log.d("RXWifiHandler", "SUPPLICANT_CONNECTION_CHANGE_ACTION");
 			boolean connected = intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false);
 
 			for (int i = 0; i < observers.size(); i++) {

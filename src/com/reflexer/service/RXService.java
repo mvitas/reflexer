@@ -2,36 +2,25 @@ package com.reflexer.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.IBinder;
+import android.util.Log;
 
-import com.reflexer.config.RXActions;
 import com.reflexer.handler.RXHandler;
-import com.reflexer.model.RXReactionDefinition;
 import com.reflexer.model.RXReflex;
 import com.reflexer.receiver.RXReceiver;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 //TODO: start the service on boot
 public class RXService extends Service {
-
-	private static final String SLASH = "/";
-
-	/**
-	 * List of all available reactions.
-	 */
-	private ArrayList<RXReactionDefinition> reactionList;
 
 	/**
 	 * List containing all the reflexes.
 	 */
 	private ArrayList<RXReflex> reflexes;
-
-	/**
-	 * List containing currently active handlers. Accessed from multiple
-	 * threads: BroadcastReceiver thread and threads spawned by RXReceiver.
-	 */
-	private volatile ArrayList<RXHandler> handlers;
 
 	/**
 	 * BroadcastReceiver that intercepts all possible actions.
@@ -47,6 +36,9 @@ public class RXService extends Service {
 	public void activateReflex(RXReflex reflex) {
 		reflex.getStimuli().getDefinition().getHandler().addObserver(reflex.getStimuli());
 		reflex.getStimuli().setReflexListener(reflex);
+		reflex.getStimuli().getDefinition().getHandler().onActivate(reflex.getStimuli());
+
+		reRegisterBroadcastReceiver();
 	}
 
 	/**
@@ -58,6 +50,9 @@ public class RXService extends Service {
 	public void deactivateReflex(RXReflex reflex) {
 		reflex.getStimuli().getDefinition().getHandler().removeObserver(reflex.getStimuli());
 		reflex.getStimuli().setReflexListener(null);
+		reflex.getStimuli().getDefinition().getHandler().onDeactivate(reflex.getStimuli());
+
+		reRegisterBroadcastReceiver();
 	}
 
 	/**
@@ -90,10 +85,6 @@ public class RXService extends Service {
 		return reflexes;
 	}
 
-	public ArrayList<RXHandler> getHandlers() {
-		return handlers;
-	}
-
 	@Override
 	public IBinder onBind(Intent intent) {
 		RXBinder binder = new RXBinder(this);
@@ -122,15 +113,46 @@ public class RXService extends Service {
 		return Service.START_STICKY;
 	}
 
+	/**
+	 * Creates a new IntentFilter that contains all the actions that are used by
+	 * currently active reflexes.
+	 * 
+	 * @return
+	 */
+	private IntentFilter generateIntentFilter() {
+		IntentFilter filter = new IntentFilter();
+		Set<String> actions = new HashSet<String>();
+
+		for (RXReflex reflex : reflexes) {
+			RXHandler handler = reflex.getStimuli().getDefinition().getHandler();
+			if (handler.hasObservers()) {
+				actions.addAll(handler.getInterestingActionsList());
+			}
+		}
+
+		for (String action : actions) {
+			Log.d("RXService", "adding action: " + action);
+			filter.addAction(action);
+		}
+
+		return filter;
+	}
+
 	private void registerBroadcastReceiver() {
 		receiver = new RXReceiver(this);
-		registerReceiver(receiver, RXActions.getIntentFilter());
+
+		registerReceiver(receiver, generateIntentFilter());
 	}
 
 	private void unregisterBroadcastReceiver() {
 		if (receiver != null) {
 			unregisterReceiver(receiver);
 		}
+	}
+
+	private void reRegisterBroadcastReceiver() {
+		unregisterBroadcastReceiver();
+		registerBroadcastReceiver();
 	}
 
 	/**

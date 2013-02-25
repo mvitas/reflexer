@@ -91,4 +91,19 @@ public abstract class RXHandler {
 	 */
 	public abstract void onReceive(Context context, Intent intent);
 
+	/**
+	 * Called when a reflex is activated. Associated stimuli is passed as
+	 * argument.
+	 */
+	public void onActivate(RXStimuli stimuli) {
+
+	}
+
+	/**
+	 * Called when a reflex is deactivated. Associated stimuli is passed as
+	 * argument.
+	 */
+	public void onDeactivate(RXStimuli stimuli) {
+
+	}
 }

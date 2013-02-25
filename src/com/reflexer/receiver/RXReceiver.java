@@ -3,6 +3,7 @@ package com.reflexer.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.reflexer.handler.RXHandler;
 import com.reflexer.model.RXStimuli;
@@ -28,6 +29,7 @@ public class RXReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, final Intent intent) {
+		Log.d("RXReceiver", "onReceive( " + intent + " )");
 		ArrayList<RXStimuliDefinition> definitions = null;
 		try {
 			definitions = RXStimuli.getStimuliDefinitions(service);

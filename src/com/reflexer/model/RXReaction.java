@@ -135,6 +135,7 @@ public abstract class RXReaction {
 			if (p.getName().equals(param.getName())) {
 				p.setValue(param.getValue());
 				shouldAdd = false;
+				break;
 			}
 		}
 		if (shouldAdd) {

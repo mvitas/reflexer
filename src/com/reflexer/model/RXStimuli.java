@@ -280,4 +280,20 @@ public class RXStimuli {
 	public void setConditionList(ArrayList<RXStimuliCondition> conditionList) {
 		this.conditionList = conditionList;
 	}
+
+	public void addRXParam(RXStimuliCondition param) {
+		boolean shouldAdd = true;
+		
+		for (RXStimuliCondition p : conditionList){
+			if (p.getName().equals(param.getName())){
+				p.setValue(param.getValue());
+				shouldAdd = false;
+				break;
+			}
+		}
+		if (shouldAdd){
+			conditionList.add(param);
+		}
+		
+	}
 }

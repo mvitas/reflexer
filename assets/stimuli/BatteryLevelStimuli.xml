@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<stimuli name="BatteryLevelStimuli">
+  <handler name="BatteryLevelHandler" class="com.reflexer.handler.RXBatteryLevelHandler">
+    <interested-in alias="battery-changed">android.intent.action.BATTERY_CHANGED</interested-in>
+  </handler>
+  <conditions>
+    <condition name="level" type="rx-int" required="true" />
+  </conditions>
+</stimuli>

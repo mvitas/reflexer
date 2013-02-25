@@ -146,7 +146,7 @@ public class RXStimuli {
 		for (int i = 0; i < conditionList.size(); i++) {
 			RXStimuliCondition condition = conditionList.get(i);
 
-			Object currentState = getRXParamByName(condition.getName());
+			Object currentState = currentConditionState.get(condition.getName());
 
 			if (!condition.getValue().equals(currentState)) {
 				return false;
@@ -173,7 +173,26 @@ public class RXStimuli {
 			throw new IllegalStateException("Preconditions for " + conditionName + " are not all set");
 		}
 
+		RXStimuliCondition condition = getConditionByName(conditionName);
+
+		if (condition == null) {
+			return; // condition has not been set so ignore it
+		}
+
+		Object lastValue = currentConditionState.get(conditionName);
+
+		if (value.equals(lastValue)) {
+			return; // condition has not changed, make sure it doesn't trigger
+					// isFulfilled
+		}
+
 		currentConditionState.put(conditionName, value);
+
+		boolean isFulfilled = isFulfilled();
+
+		if (isFulfilled && reflexListener != null) {
+			reflexListener.onStimulate();
+		}
 	}
 
 	/**
@@ -197,13 +216,7 @@ public class RXStimuli {
 			getConditionList().add(condition);
 		}
 
-		boolean isFulfilled = isFulfilled();
-
-		if (isFulfilled && reflexListener != null) {
-			reflexListener.onStimulate();
-		}
-
-		return isFulfilled;
+		return shouldAdd;
 	}
 
 	public void setReflexListener(IRXReflexListener reflexListener) {
@@ -237,7 +250,8 @@ public class RXStimuli {
 	 * @param name
 	 * @return
 	 */
-	public RXProperty getRXParamByName(String name) {
+	public Object getConditionCurrentState(String name) {
+
 		RXProperty property = null;
 
 		for (RXProperty param : getConditionList()) {
@@ -273,11 +287,37 @@ public class RXStimuli {
 		this.id = id;
 	}
 
+	public RXStimuliCondition getConditionByName(String name) {
+		for (RXStimuliCondition condition : conditionList) {
+			if (condition.getName().equals(name)) {
+				return condition;
+			}
+		}
+
+		return null;
+	}
+
 	public ArrayList<RXStimuliCondition> getConditionList() {
 		return conditionList;
 	}
 
 	public void setConditionList(ArrayList<RXStimuliCondition> conditionList) {
 		this.conditionList = conditionList;
+	}
+
+	public void addRXParam(RXStimuliCondition param) {
+		boolean shouldAdd = true;
+
+		for (RXStimuliCondition p : conditionList) {
+			if (p.getName().equals(param.getName())) {
+				p.setValue(param.getValue());
+				shouldAdd = false;
+				break;
+			}
+		}
+		if (shouldAdd) {
+			conditionList.add(param);
+		}
+
 	}
 }

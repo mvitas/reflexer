@@ -12,11 +12,14 @@ import java.util.HashMap;
 public abstract class RXHandler {
 
 	/**
-	 * List of RXStimuli extended classes that are associated with this handler.
+	 * List of RXStimuli classes that are associated with this handler.
 	 */
-	protected ArrayList<RXStimuli> observers;
+	protected ArrayList<RXStimuli> observers = new ArrayList<RXStimuli>();
 
-	protected HashMap<String, String> interestingActions;
+	/**
+	 * List of actions that RXHandler implementation is listening to.
+	 */
+	protected HashMap<String, String> interestingActions = new HashMap<String, String>();
 
 	public void addObserver(RXStimuli stimuli) {
 		observers.add(stimuli);
@@ -82,10 +85,39 @@ public abstract class RXHandler {
 	}
 
 	/**
+	 * Notify all registered observers about the condition state change.
+	 * 
+	 * @param conditionName
+	 *            name of the condition that has changed
+	 * @param value
+	 *            new value of the condition
+	 */
+	public void notifyConditionState(String conditionName, Object value) {
+		for (int i = 0; i < observers.size(); i++) {
+			observers.get(i).setConditionCurrentState(conditionName, value);
+		}
+	}
+
+	/**
 	 * Called when a handler
 	 * 
 	 * @param intent
 	 */
 	public abstract void onReceive(Context context, Intent intent);
 
+	/**
+	 * Called when a reflex is activated. Associated stimuli is passed as
+	 * argument.
+	 */
+	public void onActivate(RXStimuli stimuli) {
+
+	}
+
+	/**
+	 * Called when a reflex is deactivated. Associated stimuli is passed as
+	 * argument.
+	 */
+	public void onDeactivate(RXStimuli stimuli) {
+
+	}
 }

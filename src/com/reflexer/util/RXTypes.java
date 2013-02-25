@@ -2,8 +2,6 @@ package com.reflexer.util;
 
 public class RXTypes {
 
-	public static final int RX_UNDEFINED = 0;
-
 	public static final int RX_BOOL = 1;
 
 	public static final int RX_STRING = 2;

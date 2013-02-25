@@ -115,9 +115,13 @@ public abstract class RXReaction {
 			reaction.id = id;
 			reaction.definition = definition;
 			reaction.paramList = propertyList;
-		} finally {
 			return reaction;
+		} catch (InstantiationException e) {
+			return null;
+		} catch (IllegalAccessException e) {
+			return null;
 		}
+
 	}
 
 	/**
@@ -135,6 +139,7 @@ public abstract class RXReaction {
 			if (p.getName().equals(param.getName())) {
 				p.setValue(param.getValue());
 				shouldAdd = false;
+				break;
 			}
 		}
 		if (shouldAdd) {

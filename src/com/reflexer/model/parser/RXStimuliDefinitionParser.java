@@ -148,7 +148,6 @@ public class RXStimuliDefinitionParser {
 			}
 		}
 
-		parser.next();
 		parser.require(XmlPullParser.END_TAG, ns, CONDITIONS_TAG);
 
 		assignDependencies(conditionList, dependencyMap);
@@ -192,7 +191,6 @@ public class RXStimuliDefinitionParser {
 		depMap.condition = new RXConditionDefinition(required, name, type);
 		depMap.dependsOn = readDependencies(parser);
 
-		parser.next();
 		parser.require(XmlPullParser.END_TAG, ns, CONDITION_TAG);
 
 		return depMap;
@@ -202,6 +200,10 @@ public class RXStimuliDefinitionParser {
 		ArrayList<String> dependencies = new ArrayList<String>();
 
 		while (parser.nextTag() == XmlPullParser.START_TAG) {
+			if (!parser.getName().equals(DEPENDS_ON_TAG)) {
+				break;
+			}
+
 			parser.require(XmlPullParser.START_TAG, ns, DEPENDS_ON_TAG);
 
 			parser.next();
@@ -210,7 +212,7 @@ public class RXStimuliDefinitionParser {
 			dependencies.add(parser.getText());
 
 			parser.next();
-			parser.require(XmlPullParser.END_TAG, ns, INTERESTED_IN_TAG);
+			parser.require(XmlPullParser.END_TAG, ns, DEPENDS_ON_TAG);
 		}
 
 		return dependencies;

@@ -66,7 +66,7 @@ public class RXReactionDefinitionParser {
 		reaction.setReactionClass(reactionClass);
 		reaction.setPropertyDefinitions(readProperties(parser));
 
-		parser.next();
+		parser.nextTag();
 		parser.require(XmlPullParser.END_TAG, ns, REACTION_TAG);
 
 		return reaction;
@@ -76,14 +76,14 @@ public class RXReactionDefinitionParser {
 			IOException {
 		ArrayList<RXPropertyDefinition> properties = new ArrayList<RXPropertyDefinition>();
 
-		parser.next();
+		parser.nextTag();
 		parser.require(XmlPullParser.START_TAG, ns, PROPERTIES_TAG);
 
-		while (parser.next() == XmlPullParser.START_TAG) {
+		while (parser.nextTag() == XmlPullParser.START_TAG) {
 			properties.add(readProperty(parser));
 		}
 
-		parser.next();
+		parser.nextTag();
 		parser.require(XmlPullParser.END_TAG, ns, PROPERTIES_TAG);
 		return properties;
 	}

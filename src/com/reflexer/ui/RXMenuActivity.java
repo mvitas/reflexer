@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -44,8 +46,21 @@ public class RXMenuActivity extends SherlockActivity {
     private void initRXList() {
         RXAdapter adapter = new RXAdapter(this, rxItems);
         rxList.setAdapter(adapter);
+        
+        rxList.setOnItemClickListener(rxOnItemClickListener);
 
     }
+    
+    private OnItemClickListener rxOnItemClickListener = new OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+            
+            Intent intent = new Intent(RXMenuActivity.this, RXCreateActivity.class);
+            startActivity(intent);
+            
+        }
+    };
 
     private ArrayList<RXItem> generateRX(int n) {
         ArrayList<RXItem> items = new ArrayList<RXItem>();

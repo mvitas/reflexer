@@ -122,15 +122,15 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	// **************INSERT METHODS***************
-	public int insertRxReactionProperty(SQLiteDatabase db, RXReactionProperty property, int reactionId) {
-		ContentValues cv = property.toContentValues();
+	public int insertRxReactionProperty(Context context, SQLiteDatabase db, RXReactionProperty property, int reactionId, String reacitonName) {
+		ContentValues cv = property.toContentValues(context, reacitonName);
 		cv.put(COLUMN_RX_REACTION_ID, reactionId);
 
 		return (int) db.insertOrThrow(TABLE_RXPROPERTY, null, cv);
 	}
 
-	public int insertRxStimuliProperty(SQLiteDatabase db, RXStimuliCondition property, int stimuliId) {
-		ContentValues cv = property.toContentValues();
+	public int insertRxStimuliProperty(Context c, SQLiteDatabase db, RXStimuliCondition property, int stimuliId, String stimuliName) {
+		ContentValues cv = property.toContentValues(c, stimuliName);
 		cv.put(COLUMN_RX_STIUMLI_ID, stimuliId);
 
 		return (int) db.insertOrThrow(TABLE_RX_STIMULI_PROPERTY, null, cv);
@@ -144,7 +144,7 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 		return (int) db.insertOrThrow(TABLE_RXREACTION, null, reaction.toContentValues());
 	}
 
-	public int insertRxReflex(SQLiteDatabase db, RXReflex reflex) {
+	public int insertRxReflex(SQLiteDatabase db, RXReflex reflex, Context context) {
 		int reflexId = -1;
 
 		RXStimuli stimuli = reflex.getStimuli();
@@ -158,7 +158,7 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 			int stimuliId = insertRxStimuli(db, stimuli);
 
 			for (RXStimuliCondition sp : stimuli.getConditionList()) {
-				insertRxStimuliProperty(db, sp, stimuliId);
+				insertRxStimuliProperty(context, db, sp, stimuliId, stimuli.getDefinition().getName());
 			}
 
 			// insert reaction and then when we have the ID, insert the reaction
@@ -166,7 +166,7 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 			int reactionId = insertRxReaction(db, reaction);
 
 			for (RXReactionProperty rp : reaction.getParamList()) {
-				insertRxReactionProperty(db, rp, reactionId);
+				insertRxReactionProperty(context, db, rp, reactionId, reaction.getDefinition().getName());
 			}
 
 			// insert reflex with stimuli and reaction id
@@ -215,76 +215,76 @@ public class RXDatabaseHelper extends SQLiteOpenHelper {
 
 	// **************UPDATE METHOD***************
 	// tu ce mozda smetati sto u content values ima i id, treba testirati
-	public int updateRxReactionProperty(SQLiteDatabase db, RXReactionProperty property) {
-		return db.update(TABLE_RXPROPERTY, property.toContentValues(), COLUMN_RXPROPERTY_ID + " = ?",
-				new String[] { String.valueOf(property.getId()) });
-	}
-
-	// ako je id -1 onda insertaj -- znaci treba mi jos id Stimulija --> ovu
-	// logiku cu raditi u updateStimuli
-	// ako nije -1 onda samo updateaj vrijednosti
-	public int updateRxStimuliProperty(SQLiteDatabase db, RXStimuliCondition property) {
-		return db.update(TABLE_RX_STIMULI_PROPERTY, property.toContentValues(), COLUMN_RX_STIMULI_PROPERTY_ID + " = ?",
-				new String[] { String.valueOf(property.getId()) });
-	}
-
-	public int updateRxReaction(SQLiteDatabase db, RXReaction reaction) {
-		return db.update(TABLE_RXREACTION, reaction.toContentValues(), COLUMN_REACTION_ID + " = ?",
-				new String[] { String.valueOf(reaction.getId()) });
-	}
-
-	public int updateRxStimuli(SQLiteDatabase db, RXStimuli stimuli) {
-		return db.update(TABLE_RX_STIMULI, stimuli.toContentValues(), COLUMN_STIMULUS_ID + " = ?",
-				new String[] { String.valueOf(stimuli.getId()) });
-	}
-
-	public boolean updateRxReflex(SQLiteDatabase db, RXReflex reflex) {
-		boolean reflexUpdated = false;
-
-		RXStimuli stimuli = reflex.getStimuli();
-		RXReaction reaction = reflex.getReaction();
-
-		try {
-			db.beginTransaction();
-
-			for (RXStimuliCondition sp : stimuli.getConditionList()) {
-				if (sp.getId() == NEW_ITEM) { // this is a newly added property
-												// and therefore it has to be
-												// inserted
-					insertRxStimuliProperty(db, sp, stimuli.getId());
-				} else { // item exists in the database and it should be updated
-					updateRxStimuliProperty(db, sp);
-				}
-			}
-
-			for (RXReactionProperty rp : reaction.getParamList()) {
-				if (rp.getId() == NEW_ITEM) {
-					insertRxReactionProperty(db, rp, reaction.getId());
-				} else {
-					updateRxReactionProperty(db, rp);
-				}
-
-			}
-
-			updateRxStimuli(db, stimuli);
-
-			updateRxReaction(db, reaction);
-
-			if (db.update(TABLE_RX_REFLEX, reflex.toContentValues(), COLUMN_RX_REFLEX_ID + " = ?",
-					new String[] { String.valueOf(reflex.getId()) }) == 1) {
-				reflexUpdated = true;
-			}
-
-			db.setTransactionSuccessful();
-		} catch (SQLException ex) {
-			if (RXUtil.isDebugMode) {
-				Log.d(RXUtil.APP_TAG, "****update reflex failed****");
-			}
-		} finally {
-			db.endTransaction();
-		}
-		return reflexUpdated;
-	}
+//	public int updateRxReactionProperty(SQLiteDatabase db, RXReactionProperty property) {
+//		return db.update(TABLE_RXPROPERTY, property.toContentValues(), COLUMN_RXPROPERTY_ID + " = ?",
+//				new String[] { String.valueOf(property.getId()) });
+//	}
+//
+//	// ako je id -1 onda insertaj -- znaci treba mi jos id Stimulija --> ovu
+//	// logiku cu raditi u updateStimuli
+//	// ako nije -1 onda samo updateaj vrijednosti
+//	public int updateRxStimuliProperty(SQLiteDatabase db, RXStimuliCondition property) {
+//		return db.update(TABLE_RX_STIMULI_PROPERTY, property.toContentValues(), COLUMN_RX_STIMULI_PROPERTY_ID + " = ?",
+//				new String[] { String.valueOf(property.getId()) });
+//	}
+//
+//	public int updateRxReaction(SQLiteDatabase db, RXReaction reaction) {
+//		return db.update(TABLE_RXREACTION, reaction.toContentValues(), COLUMN_REACTION_ID + " = ?",
+//				new String[] { String.valueOf(reaction.getId()) });
+//	}
+//
+//	public int updateRxStimuli(SQLiteDatabase db, RXStimuli stimuli) {
+//		return db.update(TABLE_RX_STIMULI, stimuli.toContentValues(), COLUMN_STIMULUS_ID + " = ?",
+//				new String[] { String.valueOf(stimuli.getId()) });
+//	}
+//
+//	public boolean updateRxReflex(SQLiteDatabase db, RXReflex reflex) {
+//		boolean reflexUpdated = false;
+//
+//		RXStimuli stimuli = reflex.getStimuli();
+//		RXReaction reaction = reflex.getReaction();
+//
+//		try {
+//			db.beginTransaction();
+//
+//			for (RXStimuliCondition sp : stimuli.getConditionList()) {
+//				if (sp.getId() == NEW_ITEM) { // this is a newly added property
+//												// and therefore it has to be
+//												// inserted
+//					insertRxStimuliProperty(db, sp, stimuli.getId());
+//				} else { // item exists in the database and it should be updated
+//					updateRxStimuliProperty(db, sp);
+//				}
+//			}
+//
+//			for (RXReactionProperty rp : reaction.getParamList()) {
+//				if (rp.getId() == NEW_ITEM) {
+//					insertRxReactionProperty(db, rp, reaction.getId());
+//				} else {
+//					updateRxReactionProperty(db, rp);
+//				}
+//
+//			}
+//
+//			updateRxStimuli(db, stimuli);
+//
+//			updateRxReaction(db, reaction);
+//
+//			if (db.update(TABLE_RX_REFLEX, reflex.toContentValues(), COLUMN_RX_REFLEX_ID + " = ?",
+//					new String[] { String.valueOf(reflex.getId()) }) == 1) {
+//				reflexUpdated = true;
+//			}
+//
+//			db.setTransactionSuccessful();
+//		} catch (SQLException ex) {
+//			if (RXUtil.isDebugMode) {
+//				Log.d(RXUtil.APP_TAG, "****update reflex failed****");
+//			}
+//		} finally {
+//			db.endTransaction();
+//		}
+//		return reflexUpdated;
+//	}
 
 	public Cursor queryALLReflexs(SQLiteDatabase db) {
 		try {

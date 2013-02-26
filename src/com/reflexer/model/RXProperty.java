@@ -3,6 +3,7 @@ package com.reflexer.model;
 import com.reflexer.database.RXDatabaseHelper;
 
 import android.content.ContentValues;
+import android.content.Context;
 
 public abstract class RXProperty {
 
@@ -58,7 +59,7 @@ public abstract class RXProperty {
 	 * Creates CVs for "id", "name" and "value"
 	 * @return
 	 */
-	public abstract ContentValues toContentValues();
+	public abstract ContentValues toContentValues(Context context, String parentName);
 	
 
 }

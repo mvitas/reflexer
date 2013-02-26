@@ -1,5 +1,6 @@
 package com.reflexer.model;
 
+import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 
@@ -211,6 +212,29 @@ public abstract class RXReaction {
 		cv.put(RXDatabaseHelper.COLUMN_REACTION_NAME, definition.getName());
 
 		return cv;
+	}
+	
+	public static int getReactionPropertyType(Context context,
+			String reactionName, String propertyDefinitionName) {
+		
+		RXReactionDefinition reactionDefinition = getReactionDefinitionByName(context, reactionName);
+		
+		ArrayList<RXPropertyDefinition> reactionPropertyDefinitions =  reactionDefinition.getPropertyDefinitions();
+		
+		int type = -1;
+		
+		for (RXPropertyDefinition def : reactionPropertyDefinitions){
+			if(def.getName().equals(propertyDefinitionName)){
+				type = def.getType();
+				break;
+			}
+		}
+		
+		if (type == -1){
+			throw new IllegalStateException("type doesn't match ConditionDefinition type"); 
+		}
+		
+		return type;
 	}
 
 	public int getId() {

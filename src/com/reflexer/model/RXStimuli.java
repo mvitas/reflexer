@@ -272,9 +272,9 @@ public class RXStimuli {
 	public ContentValues toContentValues() {
 		ContentValues cv = new ContentValues();
 		if (getId() != -1) {
-			cv.put(RXDatabaseHelper.COLUMN_RX_STIMULI_PROPERTY_ID, getId());
+			cv.put(RXDatabaseHelper.COLUMN_STIMULUS_ID, getId());
 		}
-		cv.put(RXDatabaseHelper.COLUMN_RX_STIMULI_PROPERTY_NAME, definition.getName());
+		cv.put(RXDatabaseHelper.COLUMN_SIMULUS_ACTION_NAME, definition.getName());
 
 		return cv;
 	}
@@ -319,5 +319,49 @@ public class RXStimuli {
 			conditionList.add(param);
 		}
 
+	}
+
+	/**
+	 * Gets the object type for the specified definition name
+	 * 
+	 * Throws IllegalStateException if definitions can't be loaded or type doesn't match any of the specified types in the definition
+	 * 
+	 * @param context
+	 * @param stimuliName
+	 * @param conditionDefinitionName
+	 * @return
+	 */
+	public static int getStimuliConditionType(Context context,
+			String stimuliName, String conditionDefinitionName) {
+		
+		try {
+			getStimuliDefinitions(context);
+		} catch (IOException e) {
+			throw new IllegalStateException("Unable to load Stimuli Definition data");
+		}
+		
+		ArrayList<RXConditionDefinition> conditionDefinitionList = new ArrayList<RXConditionDefinition>(); 
+		
+		for (RXStimuliDefinition def : stimuliDefinitions){
+			if (def.getName().equals(stimuliName)){
+				conditionDefinitionList = def.getConditionDefinitons();
+				break;
+			}
+		}
+		
+		int type = -1;
+		
+		for (RXConditionDefinition condDef : conditionDefinitionList){
+			if(condDef.getName().equals(conditionDefinitionName)){
+				type = condDef.getType();
+				break;
+			}
+		}
+		
+		if (type == -1){
+			throw new IllegalStateException("type doesn't match ConditionDefinition type"); 
+		}
+		
+		return type;
 	}
 }

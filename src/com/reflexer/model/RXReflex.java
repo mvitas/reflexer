@@ -1,8 +1,12 @@
 package com.reflexer.model;
 
+import org.json.JSONException;
+
 import android.content.ContentValues;
 
 import com.reflexer.database.RXDatabaseHelper;
+import com.reflexer.util.RXTypeCaster;
+import com.reflexer.util.RXTypes;
 
 public class RXReflex implements IRXReflexListener {
 
@@ -21,13 +25,15 @@ public class RXReflex implements IRXReflexListener {
 	 */
 	private boolean active;
 
-	public RXReflex(RXStimuli stimuli, RXReaction rection) {
+	public RXReflex(String name, RXStimuli stimuli, RXReaction rection) {
+		this.name = name;
 		this.setId(RXDatabaseHelper.NEW_ITEM);
 		this.setRxThis(stimuli);
 		this.setRxThat(rection);
 	}
 
-	public RXReflex(int id, RXStimuli stimuli, RXReaction reaction) {
+	public RXReflex(int id, String name, RXStimuli stimuli, RXReaction reaction) {
+		this.name = name;
 		this.setId(id);
 		this.setRxThis(stimuli);
 		this.setRxThat(reaction);
@@ -93,7 +99,12 @@ public class RXReflex implements IRXReflexListener {
 		if (id != -1) {
 			cv.put(RXDatabaseHelper.COLUMN_RX_REFLEX_ID, id);
 		}
-		cv.put(RXDatabaseHelper.COLUMN_RX_REFLEX_NAME, getName());
+		try {
+			cv.put(RXDatabaseHelper.COLUMN_RX_REFLEX_NAME, RXTypeCaster.getInstance()
+					.prepareObjectForStorage(RXTypes.RX_STRING, getName()).toString());
+		} catch (JSONException e) {
+			throw new IllegalStateException("Database reflex name error");
+		}
 
 		return cv;
 	}

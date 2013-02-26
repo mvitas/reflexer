@@ -2,7 +2,6 @@ package com.reflexer.util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * 
@@ -14,29 +13,29 @@ public class RXTypeCaster {
 	// TODO: napraviti base typeCaster koji ce useri moci extendati i onda
 	// dodavai svoje typeove
 
-	private RXTypeCaster rxTypeCaster;
+	private static RXTypeCaster rxTypeCaster;
 
 	private RXTypeCaster() {
 	}
 
-	public RXTypeCaster getInstance() {
+	public static RXTypeCaster getInstance() {
 		if (rxTypeCaster == null) {
 			rxTypeCaster = new RXTypeCaster();
 		}
 		return rxTypeCaster;
 	}
 
-	public Object initializeType(int rxType, String name, String jsonString) throws JSONException {
+	public Object initializeType(int rxType, String jsonString) throws JSONException {
 
 		switch (rxType) {
 		case RXTypes.RX_BOOL:
-			return Boolean.valueOf(new JSONObject(jsonString).getString(name));
+			return Boolean.valueOf(new JSONArray(jsonString).getString(0));
 		case RXTypes.RX_INT:
-			return Integer.valueOf(new JSONObject(jsonString).getString(name));
+			return Integer.valueOf(new JSONArray(jsonString).getString(0));
 		case RXTypes.RX_INT_ARRAY:
 			return toIntArray(new JSONArray(jsonString));
 		case RXTypes.RX_STRING:
-			return new JSONObject(jsonString).getString(name);
+			return new JSONArray(jsonString).getString(0);
 		case RXTypes.RX_STRING_ARRAY:
 			return toStringArray(new JSONArray(jsonString));
 		default:
@@ -63,6 +62,35 @@ public class RXTypeCaster {
 		}
 
 		return stringArray;
+	}
+	
+	public JSONArray prepareObjectForStorage(int rxType, Object value) throws JSONException {
+
+		switch (rxType) {
+		case RXTypes.RX_BOOL:
+			return new JSONArray().put(String.valueOf(value));
+		case RXTypes.RX_INT:
+			return new JSONArray().put(String.valueOf(value));
+		case RXTypes.RX_INT_ARRAY:
+			JSONArray jIntArray = new JSONArray();
+			int [] ints = (int[]) value; 
+			for (int i=0; i<ints.length; i++){
+				jIntArray.put(ints[i]);
+			}
+			return jIntArray;
+		case RXTypes.RX_STRING:
+			return new JSONArray().put(value);
+		case RXTypes.RX_STRING_ARRAY:
+			JSONArray jStrArray = new JSONArray();
+			int [] strs = (int[]) value; 
+			for (int i=0; i<strs.length; i++){
+				jStrArray.put(strs[i]);
+			}
+			return jStrArray;
+		default:
+			return null;
+		}
+
 	}
 
 }

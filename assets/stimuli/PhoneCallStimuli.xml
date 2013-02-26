@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<stimuli name="PhoneCallStimuli">
+  <handler name="PhoneCallHandler" class="com.reflexer.handler.RXPhoneCallHandler" stimuli="PhoneCallStimuli">
+	<interested-in alias="incoming-call">android.intent.action.NEW_INCOMING_CALL</interested-in>
+    <interested-in alias="outgoing-call">android.intent.action.NEW_OUTGOING_CALL</interested-in>
+
+  </handler>
+  <conditions>
+    <condition name="incoming" type="rx-bool" required="true" trigger-on-change="false" />
+	<condition name="number" type="rx-string" required="false">
+      <depends-on>incoming</depends-on>
+	</condition>
+  </conditions>
+</stimuli>

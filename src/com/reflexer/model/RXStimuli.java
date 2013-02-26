@@ -174,6 +174,8 @@ public class RXStimuli {
 		}
 
 		RXStimuliCondition condition = getConditionByName(conditionName);
+		RXConditionDefinition conditionDefinition = RXConditionDefinition.getConditionDefinitionByName(conditionName,
+				definition.getConditionDefinitons());
 
 		if (condition == null) {
 			return; // condition has not been set so ignore it
@@ -181,7 +183,7 @@ public class RXStimuli {
 
 		Object lastValue = currentConditionState.get(conditionName);
 
-		if (value.equals(lastValue)) {
+		if (value.equals(lastValue) && conditionDefinition.isTriggeredOnChange()) {
 			return; // condition has not changed, make sure it doesn't trigger
 					// isFulfilled
 		}
@@ -324,44 +326,44 @@ public class RXStimuli {
 	/**
 	 * Gets the object type for the specified definition name
 	 * 
-	 * Throws IllegalStateException if definitions can't be loaded or type doesn't match any of the specified types in the definition
+	 * Throws IllegalStateException if definitions can't be loaded or type
+	 * doesn't match any of the specified types in the definition
 	 * 
 	 * @param context
 	 * @param stimuliName
 	 * @param conditionDefinitionName
 	 * @return
 	 */
-	public static int getStimuliConditionType(Context context,
-			String stimuliName, String conditionDefinitionName) {
-		
+	public static int getStimuliConditionType(Context context, String stimuliName, String conditionDefinitionName) {
+
 		try {
 			getStimuliDefinitions(context);
 		} catch (IOException e) {
 			throw new IllegalStateException("Unable to load Stimuli Definition data");
 		}
-		
-		ArrayList<RXConditionDefinition> conditionDefinitionList = new ArrayList<RXConditionDefinition>(); 
-		
-		for (RXStimuliDefinition def : stimuliDefinitions){
-			if (def.getName().equals(stimuliName)){
+
+		ArrayList<RXConditionDefinition> conditionDefinitionList = new ArrayList<RXConditionDefinition>();
+
+		for (RXStimuliDefinition def : stimuliDefinitions) {
+			if (def.getName().equals(stimuliName)) {
 				conditionDefinitionList = def.getConditionDefinitons();
 				break;
 			}
 		}
-		
+
 		int type = -1;
-		
-		for (RXConditionDefinition condDef : conditionDefinitionList){
-			if(condDef.getName().equals(conditionDefinitionName)){
+
+		for (RXConditionDefinition condDef : conditionDefinitionList) {
+			if (condDef.getName().equals(conditionDefinitionName)) {
 				type = condDef.getType();
 				break;
 			}
 		}
-		
-		if (type == -1){
-			throw new IllegalStateException("type doesn't match ConditionDefinition type"); 
+
+		if (type == -1) {
+			throw new IllegalStateException("type doesn't match ConditionDefinition type");
 		}
-		
+
 		return type;
 	}
 }

@@ -5,16 +5,10 @@
     android:gravity="center"
     android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reflexer Menu" />
-
-    <Button
-        android:id="@+id/test_screen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test Screen" >
-    </Button>
+    <ListView
+        android:id="@+id/rx_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+    </ListView>
 
 </LinearLayout>

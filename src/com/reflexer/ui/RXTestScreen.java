@@ -38,11 +38,16 @@ public class RXTestScreen extends Activity {
 
     int itemCount = 10;
     int onScreenItemCount = 5;
-    
+
     int previousLocation = 0;
 
     int[] itemOnScreen = new int[5];
-    int[] heightButton = new int[5];
+    int[] itemY = new int[5];
+
+    float startY;
+    float endY;
+
+    boolean layoutInit = false;
 
     private ArrayList<Button> buttons = new ArrayList<Button>();
 
@@ -52,39 +57,21 @@ public class RXTestScreen extends Activity {
 
         setContentView(R.layout.activity_test_screen);
 
-        // item = (Button)findViewById(R.id.item);
-        // item = new Button(this);
-        // LinearLayout.LayoutParams params = new
-        // LinearLayout.LayoutParams(buttonWidth, buttonHeight);
-        // item.setLayoutParams(params);
-        // parentLayout.addView(item);
-
         parentLayout = (LinearLayout)findViewById(R.id.parent_layout);
-        parentLayout.setOnTouchListener(parentLayoutTouchListener);
 
         getDisplayDimensions();
 
-        // setItemPosition(0);
-
-        distanceBetweenItems = (heightDisplay) / (onScreenItemCount + 1);
-        Log.d("DARIO", "height display=" + heightDisplay);
-        Log.d("DARIO", "distance between items=" + distanceBetweenItems);
+        distanceBetweenItems = (heightDisplay - 2 * buttonHeight) / (onScreenItemCount + 1);
 
         createItems(itemCount);
-        setItemsOnScreen();
-        setStartingPosition();
+        setFirstItemsOnScreen();
+        setInitialYCoords();
+        initItems();
+        layoutInit = true;
 
-        // item.setOnClickListener(itemOnClickListener);
+        parentLayout.setOnTouchListener(parentLayoutTouchListener);
+
     }
-
-    // private int itemHeightCombined() {
-    // int heightCombined = 0;
-    // for (int i = 0; i < onScreenItemCount; i++) {
-    // heightCombined += buttons.get(i).getHeight();
-    // }
-    //
-    // return heightCombined;
-    // }
 
     private void createItems(int n) {
         for (int i = 0; i < n; i++) {
@@ -111,16 +98,59 @@ public class RXTestScreen extends Activity {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                for (int i = 0; i < onScreenItemCount; i++) {
-                    
-                }
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                startY = event.getY();
+            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                moveItems(event.getY() - startY);
+                startY = event.getY();
             }
             return true;
         }
     };
 
-    private void setItemsOnScreen() {
+    private void moveItems(float distance) {
+
+        for (int i = 0; i < onScreenItemCount; i++) {
+            itemY[i] += distance;
+        }
+
+        if ((itemY[0] < 5) && (distance < 0)) {
+            Log.d("DARIO", "distance < 0");
+            // ovdje srediti da mjenja na sljedeci item uvijek
+            itemOnScreen[0] = itemCount - 1;
+            itemOnScreen[1] = 0;
+            itemOnScreen[2] = 1;
+            itemOnScreen[3] = 2;
+            itemOnScreen[4] = 3;
+
+            itemY[0] = itemY[1];
+            itemY[1] = itemY[2];
+            itemY[2] = itemY[3];
+            itemY[3] = itemY[4];
+            itemY[4] = heightDisplay;
+
+        } else if ((itemY[4] > (heightDisplay - 300)) && (distance > 0)) {
+            Log.d("DARIO", "distance > 0");
+            itemOnScreen[0] = itemCount - 3;
+            itemOnScreen[1] = itemCount - 2;
+            itemOnScreen[2] = itemCount - 1;
+            itemOnScreen[3] = 0;
+            itemOnScreen[4] = 1;
+
+            itemY[4] = itemY[3];
+            itemY[3] = itemY[2];
+            itemY[2] = itemY[1];
+            itemY[1] = itemY[0];
+            itemY[0] = distanceBetweenItems;
+        }
+        Log.d("DARIO", "itemY4=" + itemY[4]);
+        Log.d("DARIO", "height display=" + heightDisplay);
+
+        initItems();
+
+    }
+
+    private void setFirstItemsOnScreen() {
         // hardkodirano za 5 itema za pocetak, poslije se moze ispravit
         itemOnScreen[0] = itemCount - 2;
         itemOnScreen[1] = itemCount - 1;
@@ -130,21 +160,25 @@ public class RXTestScreen extends Activity {
 
     }
 
-    private void setHeightsOfButtons() {
+    private void setInitialYCoords() {
         for (int i = 0; i < onScreenItemCount; i++) {
-            heightButton[i] = (int)(distanceBetweenItems * (i + 1));
+            itemY[i] = (int)(distanceBetweenItems * (i + 1));
         }
+
+        // itemY[2] = heightDisplay / 2;
+        // itemY[1] = itemY[2] - heightDisplay / 12;
+        // itemY[0] = itemY[1] - heightDisplay / 12;
+        // itemY[3] = itemY[2] + heightDisplay / 12;
+        // itemY[4] = itemY[3] + heightDisplay / 12;
     }
 
-    private void setStartingPosition() {
-
+    private void initItems() {
         for (int i = 0; i < onScreenItemCount; i++) {
-
             Button buttonToDraw = buttons.get(itemOnScreen[i]);
-            drawItem(buttonToDraw, heightButton[i]);
+            drawItem(buttonToDraw, itemY[i]);
+            // Log.d("DARIO", "itemY=" + itemY[i]);
 
         }
-
     }
 
     private void drawItem(Button button, int height) {
@@ -154,66 +188,27 @@ public class RXTestScreen extends Activity {
         float percentage;
         if (height < (heightDisplay / 2)) {
             percentage = (float)height / (heightDisplay / 2);
-
         } else {
             percentage = (float)(heightDisplay - height) / (heightDisplay / 2);
         }
 
         int leftMargin = (widthDisplay - (int)(buttonWidth * percentage * 2)) / 2;
 
-        Log.d("DARIO", "percentage=" + percentage);
-        Log.d("DARIO", "height/2=" + height / 2);
+        params.setMargins(leftMargin, (height / 4) + (int)(buttonHeight * percentage), 0, 0);
 
-        if (height < (heightDisplay / 2)) {
-            // params.setMargins(leftMargin, (height / 2) - (int)(buttonHeight *
-            // percentage * 2), 0, 0);
-            params.setMargins(leftMargin, (height / 4) + (int)(buttonHeight * percentage), 0, 0);
-        } else {
-            // params.setMargins(leftMargin, (height / 2) - (int)(buttonHeight *
-            // percentage * 2 * 2), 0, 0);
-            params.setMargins(leftMargin, (height / 4) + (int)(buttonHeight * percentage), 0, 0);
-        }
-        Log.d("DARIO", "minus=" + (int)(buttonHeight * percentage * 2));
-        Log.d("DARIO", "total=" + ((height / 2) - (int)(buttonHeight * percentage * 2)));
-        Log.d("DARIO", " ");
-
+        // SKALIRANJE ITEMA, ALPHA, TEXT COLOR I SIZE
         params.width = (int)(buttonWidth * percentage * 2);
         params.height = (int)(buttonHeight * percentage * 2);
-
         button.getBackground().setAlpha((int)(percentage * 255));
-
         button.setTextColor(Color.argb((int)(percentage * 255), 0, 0, 0));
         button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12 * percentage);
-
         button.setLayoutParams(params);
 
-        parentLayout.addView(button);
-
-    }
-
-    private void setItemPosition(int height) {
-
-        LinearLayout.LayoutParams params = (LayoutParams)item.getLayoutParams();
-
-        float percentage;
-        if (height < (heightDisplay / 2)) {
-            percentage = (float)height / (heightDisplay / 2);
+        if (!layoutInit) {
+            parentLayout.addView(button);
         } else {
-            percentage = (float)(heightDisplay - height) / (heightDisplay / 2);
+            parentLayout.invalidate();
         }
-
-        int leftMargin = (widthDisplay - (int)(buttonWidth * percentage * 2)) / 2;
-        params.setMargins(leftMargin, height - (int)(buttonWidth * percentage), 0, 0);
-
-        params.width = (int)(buttonWidth * percentage * 2);
-        params.height = (int)(buttonHeight * percentage * 2);
-        item.getBackground().setAlpha((int)(percentage * 255));
-
-        item.setTextColor(Color.argb((int)(percentage * 255), 0, 0, 0));
-        item.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12 * percentage * 2);
-
-        item.setLayoutParams(params);
-        item.invalidate();
 
     }
 

@@ -170,6 +170,9 @@
         <activity android:name="com.reflexer.ui.RXSplashActivity" >
         </activity>
         <activity android:name="com.reflexer.ui.RXTestScreen" />
+        <activity
+            android:name="com.reflexer.ui.RXCreateActivity"
+            android:theme="@style/Theme.Sherlock.Light.DarkActionBar" />
     </application>
 
 </manifest>

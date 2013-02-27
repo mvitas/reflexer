@@ -49,11 +49,11 @@ public class RXAdapter extends BaseAdapter {
         }
         
         TextView rxName = (TextView)convertView.findViewById(R.id.rx_name_label);
-        CheckBox rxCheckbox = (CheckBox)convertView.findViewById(R.id.rx_checkbox);
+//        CheckBox rxCheckbox = (CheckBox)convertView.findViewById(R.id.rx_checkbox);
         
         
         rxName.setText(getItem(position).getName());
-        rxCheckbox.setChecked(getItem(position).isEnabled());
+//        rxCheckbox.setChecked(getItem(position).isEnabled());
 
         return convertView;
     }

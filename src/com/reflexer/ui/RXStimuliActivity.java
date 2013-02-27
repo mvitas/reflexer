@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.reflexer.R;
+
 public class RXStimuliActivity extends Fragment {
 
     public static RXStimuliActivity newInstance() {
@@ -18,7 +20,8 @@ public class RXStimuliActivity extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        // return super.onCreateView(inflater, container, savedInstanceState);
+        return inflater.inflate(R.layout.activity_splash, null);
     }
 
 }

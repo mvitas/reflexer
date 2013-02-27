@@ -84,7 +84,7 @@ public class RXMenuActivity extends SherlockActivity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
 
-        Toast.makeText(this, "Add new Stimulid", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Add new Stimuli", Toast.LENGTH_SHORT).show();
         return super.onMenuItemSelected(featureId, item);
     }
 

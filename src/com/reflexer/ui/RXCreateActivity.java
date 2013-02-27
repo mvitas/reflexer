@@ -22,7 +22,7 @@ public class RXCreateActivity extends SherlockFragmentActivity {
 
         setContentView(R.layout.activity_create);
 
-        getSupportActionBar().setTitle("Create ");
+        getSupportActionBar().setTitle("Create");
 
         mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager());
 

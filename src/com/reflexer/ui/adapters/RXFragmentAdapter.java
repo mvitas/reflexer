@@ -27,9 +27,9 @@ public class RXFragmentAdapter extends FragmentPagerAdapter {
 
         switch (arg0) {
             case 0:
-                return new RXStimuliActivity();
+                return new RXStimuliActivity().newInstance();
             case 1:
-                return new RXReactionActivity();
+                return new RXReactionActivity().newInstance();
         }
 
         return null;

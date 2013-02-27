@@ -6,8 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.reflexer.ui.RXReactionActivity;
-import com.reflexer.ui.RXStimuliActivity;
+import com.reflexer.ui.RXReactionFragment;
+import com.reflexer.ui.RXStimuliFragment;
 
 public class RXFragmentAdapter extends FragmentPagerAdapter {
     protected static final String[] CONTENT = new String[] {
@@ -27,9 +27,9 @@ public class RXFragmentAdapter extends FragmentPagerAdapter {
 
         switch (arg0) {
             case 0:
-                return new RXStimuliActivity().newInstance();
+                return new RXStimuliFragment().newInstance();
             case 1:
-                return new RXReactionActivity().newInstance();
+                return new RXReactionFragment().newInstance();
         }
 
         return null;

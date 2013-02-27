@@ -13,12 +13,11 @@ import com.reflexer.handler.RXHandler;
 import com.reflexer.model.RXReflex;
 import com.reflexer.receiver.RXReceiver;
 
-import java.io.WriteAbortedException;
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.json.JSONException;
 
 //TODO: start the service on boot
 public class RXService extends Service {
@@ -69,7 +68,7 @@ public class RXService extends Service {
 	public void addReflex(RXReflex reflex) {
 		reflexes.add(reflex);
 		RXDatabaseHelper helper = new RXDatabaseHelper(this, null, null, 1);
-		
+
 		SQLiteDatabase writableDatabase = helper.getWritableDatabase();
 		helper.insertRxReflex(writableDatabase, reflex, this);
 		writableDatabase.close();
@@ -115,19 +114,20 @@ public class RXService extends Service {
 		super.onCreate();
 		RXDatabaseHelper helper = new RXDatabaseHelper(this, null, null, 1);
 		SQLiteDatabase readableDatabase = helper.getReadableDatabase();
-		
+
 		try {
 			reflexes = RXMapper.getAllReflexes(this, helper.queryALLReflexs(readableDatabase));
-			for (RXReflex r : reflexes){
+			for (RXReflex r : reflexes) {
 				activateReflex(r);
 			}
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
+			reflexes = new ArrayList<RXReflex>();
+			e.printStackTrace();
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			reflexes = new ArrayList<RXReflex>();
 			e.printStackTrace();
 		}
-		
+
 		registerBroadcastReceiver();
 
 		// TODO restore reflexes from database

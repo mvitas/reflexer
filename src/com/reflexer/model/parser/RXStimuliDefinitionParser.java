@@ -44,6 +44,8 @@ public class RXStimuliDefinitionParser {
 
 	private static final String REQUIRED_ATTRIBUTE = "required";
 
+	private static final String TRIGGER_ON_CHANGE_ATTRIBUTE = "trigger-on-change";
+
 	public RXStimuliDefinition parse(InputStream in) throws XmlPullParserException, IOException,
 			InstantiationException, IllegalAccessException, ClassNotFoundException {
 		XmlPullParser parser = Xml.newPullParser();
@@ -172,6 +174,7 @@ public class RXStimuliDefinitionParser {
 		String name = null;
 		String typeString = null;
 		String requiredString = null;
+		String triggerOnChangeString = "true";
 
 		int attributeCount = parser.getAttributeCount();
 
@@ -182,13 +185,16 @@ public class RXStimuliDefinitionParser {
 				typeString = parser.getAttributeValue(i);
 			} else if (parser.getAttributeName(i).equals(REQUIRED_ATTRIBUTE)) {
 				requiredString = parser.getAttributeValue(i);
+			} else if (parser.getAttributeName(i).equals(TRIGGER_ON_CHANGE_ATTRIBUTE)) {
+				triggerOnChangeString = parser.getAttributeValue(i);
 			}
 		}
 
 		int type = RXTypes.fromString(typeString);
 		boolean required = Boolean.parseBoolean(requiredString);
+		boolean triggerOnChange = Boolean.parseBoolean(triggerOnChangeString);
 
-		depMap.condition = new RXConditionDefinition(required, name, type);
+		depMap.condition = new RXConditionDefinition(required, name, type, triggerOnChange);
 		depMap.dependsOn = readDependencies(parser);
 
 		parser.require(XmlPullParser.END_TAG, ns, CONDITION_TAG);

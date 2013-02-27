@@ -10,6 +10,15 @@ public class RXConditionDefinition {
 	private boolean required;
 
 	/**
+	 * Is the action triggered only when the condition state is changed or every
+	 * time the condition set.
+	 * <p>
+	 * If set to true action will be triggered only when the condition state has
+	 * changed.
+	 */
+	private boolean triggerOnChange;
+
+	/**
 	 * Name of the condition.
 	 */
 	private String name;
@@ -26,11 +35,16 @@ public class RXConditionDefinition {
 	private ArrayList<RXConditionDefinition> dependsOn;
 
 	public RXConditionDefinition(boolean required, String name, int type) {
+		this(required, name, type, true);
+	}
+
+	public RXConditionDefinition(boolean required, String name, int type, boolean triggerOnChange) {
 		super();
 		this.required = required;
 		this.name = name;
 		this.type = type;
 		this.dependsOn = new ArrayList<RXConditionDefinition>();
+		this.triggerOnChange = triggerOnChange;
 	}
 
 	/**
@@ -75,6 +89,10 @@ public class RXConditionDefinition {
 		return required;
 	}
 
+	public boolean isTriggeredOnChange() {
+		return triggerOnChange;
+	}
+
 	public void setDependsOn(ArrayList<RXConditionDefinition> dependsOn) {
 		this.dependsOn = dependsOn;
 	}
@@ -89,6 +107,10 @@ public class RXConditionDefinition {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public void setTriggerOnChange(boolean triggerOnChange) {
+		this.triggerOnChange = triggerOnChange;
 	}
 
 }

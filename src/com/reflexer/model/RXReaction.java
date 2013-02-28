@@ -121,7 +121,24 @@ public abstract class RXReaction {
 		} catch (IllegalAccessException e) {
 			return null;
 		}
+	}
 
+	public static RXReaction createReaction(RXReactionDefinition definition) {
+		Class<? extends RXReaction> reactionClass = definition.getReactionClass();
+
+		RXReaction reaction = null;
+
+		try {
+			reaction = reactionClass.newInstance();
+			reaction.id = RXDatabaseHelper.NEW_ITEM;
+			reaction.definition = definition;
+			reaction.paramList = new ArrayList<RXReactionProperty>();
+			return reaction;
+		} catch (InstantiationException e) {
+			return null;
+		} catch (IllegalAccessException e) {
+			return null;
+		}
 	}
 
 	/**

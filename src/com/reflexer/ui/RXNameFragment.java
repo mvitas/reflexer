@@ -3,6 +3,7 @@ package com.reflexer.ui;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.reflexer.R;
+import com.reflexer.model.RXReflex;
 
 public class RXNameFragment extends Fragment {
 
@@ -20,9 +22,9 @@ public class RXNameFragment extends Fragment {
 	private EditText nameEdit;
 
 	/**
-	 * Name of the reflex that is being created.
+	 * Reflex that is being edited.
 	 */
-	private String name;
+	private RXReflex reflex;
 
 	public static RXNameFragment newInstance() {
 		RXNameFragment fragment = new RXNameFragment();
@@ -30,17 +32,16 @@ public class RXNameFragment extends Fragment {
 		return fragment;
 	}
 
-	public static RXNameFragment newInstance(String name) {
-		RXNameFragment fragment = new RXNameFragment(name);
-		return fragment;
-	}
-
 	public RXNameFragment() {
 		super();
 	}
 
-	public RXNameFragment(String name) {
-		this.name = name;
+	public void setReflex(RXReflex reflex) {
+		this.reflex = reflex;
+
+		if (!TextUtils.isEmpty(reflex.getName())) {
+			nameEdit.setText(reflex.getName());
+		}
 	}
 
 	@Override
@@ -52,7 +53,7 @@ public class RXNameFragment extends Fragment {
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+				reflex.setName(s.toString());
 			}
 
 			@Override
@@ -65,10 +66,6 @@ public class RXNameFragment extends Fragment {
 
 			}
 		});
-
-		if (name != null) {
-			nameEdit.setText(name);
-		}
 
 		return view;
 	}

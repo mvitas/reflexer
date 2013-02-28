@@ -33,14 +33,8 @@ public class RXFragmentAdapter extends FragmentPagerAdapter {
 		reactionFragment = RXReactionFragment.newInstance();
 	}
 
-	public RXFragmentAdapter(Context context, FragmentManager fm, RXReflex reflex) {
-		super(fm);
-		this.context = context;
-		this.reflex = reflex;
-
-		nameFragment = RXNameFragment.newInstance(reflex.getName());
-		stimuliFragment = RXStimuliFragment.newInstance(reflex.getStimuli());
-		reactionFragment = RXReactionFragment.newInstance(reflex.getReaction());
+	public void setReflex(RXReflex reflex) {
+		nameFragment.setReflex(reflex);
 	}
 
 	@Override

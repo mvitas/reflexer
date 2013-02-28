@@ -113,7 +113,10 @@ public class RXMenuActivity extends SherlockActivity {
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 
 		Toast.makeText(this, "Add new Stimuli", Toast.LENGTH_SHORT).show();
+
+		Intent intent = new Intent(this, RXCreateActivity.class);
+		startActivity(intent);
+
 		return super.onMenuItemSelected(featureId, item);
 	}
-
 }

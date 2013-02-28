@@ -9,6 +9,8 @@ import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.reflexer.R;
 import com.reflexer.model.RXReaction;
 import com.reflexer.model.RXReflex;
@@ -58,21 +60,7 @@ public class RXCreateActivity extends SherlockFragmentActivity {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder binder) {
 			serviceBinder = ((RXBinder) binder);
-
-			int reflexIndex = NO_INDEX_SET;
-			if (getIntent().getExtras() != null) {
-				reflexIndex = getIntent().getExtras().getInt(REFLEX_INDEX, NO_INDEX_SET);
-			}
-
-			update = reflexIndex != NO_INDEX_SET;
-
-			if (!update) {
-				reflex = createDefaultReflex();
-			} else {
-				reflex = getReflexWidthIndex(reflexIndex);
-			}
-
-			mAdapter.setReflex(reflex);
+			setupTabs();
 		}
 	};
 
@@ -81,9 +69,24 @@ public class RXCreateActivity extends SherlockFragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_create);
-		getSupportActionBar().setTitle("Create");
 
-		setupTabs();
+		int reflexIndex = NO_INDEX_SET;
+		if (getIntent().getExtras() != null) {
+			reflexIndex = getIntent().getExtras().getInt(REFLEX_INDEX, NO_INDEX_SET);
+		}
+
+		update = reflexIndex != NO_INDEX_SET;
+
+		if (!update) {
+			reflex = createDefaultReflex();
+		} else {
+			reflex = getReflexWidthIndex(reflexIndex);
+		}
+
+		mAdapter.setReflex(reflex);
+
+		getSupportActionBar().setTitle("Create");
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -102,6 +105,17 @@ public class RXCreateActivity extends SherlockFragmentActivity {
 	};
 
 	private void setupTabs() {
+		mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager());
+		int reflexIndex = getIntent().getExtras().getInt(REFLEX_INDEX, NO_INDEX_SET);
+
+		update = reflexIndex != NO_INDEX_SET;
+
+		if (!update) {
+			createDefaultReflex();
+		} else {
+			getReflexWidthIndex(reflexIndex);
+		}
+
 		mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager());
 
 		mPager = (ViewPager) findViewById(R.id.pager);
@@ -135,6 +149,21 @@ public class RXCreateActivity extends SherlockFragmentActivity {
 
 	private RXReflex getReflexWidthIndex(int index) {
 		return serviceBinder.getReflexes().get(index);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add("Create Reflex").setIcon(R.drawable.ic_action_accept).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+
+		// Intent intent = new Intent(this, RXCreateActivity.class);
+		// startActivity(intent);
+
+		return super.onMenuItemSelected(featureId, item);
 	}
 
 }

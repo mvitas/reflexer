@@ -1,3 +1,4 @@
+
 package com.reflexer.ui;
 
 import android.content.ComponentName;
@@ -26,97 +27,95 @@ import java.util.ArrayList;
 
 public class RXMenuActivity extends SherlockActivity {
 
-	/**
-	 * ListView containing all the reflexes.
-	 */
-	private ListView rxList;
+    /**
+     * ListView containing all the reflexes.
+     */
+    private ListView rxList;
 
-	/**
-	 * IBinder interface for accessing RXService methods.
-	 */
-	private RXBinder serviceBinder;
+    /**
+     * IBinder interface for accessing RXService methods.
+     */
+    private RXBinder serviceBinder;
 
-	private final ServiceConnection connection = new ServiceConnection() {
+    private final ServiceConnection connection = new ServiceConnection() {
 
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder binder) {
-			Log.d("RXMenuActivity", "onServiceConnected");
-			serviceBinder = ((RXBinder) binder);
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            Log.d("RXMenuActivity", "onServiceConnected");
+            serviceBinder = ((RXBinder)binder);
 
-			ArrayList<RXReflex> reflexes = serviceBinder.getReflexes();
+            ArrayList<RXReflex> reflexes = serviceBinder.getReflexes();
 
-			RXAdapter rxAdapter = new RXAdapter(RXMenuActivity.this, reflexes);
-			rxList.setAdapter(rxAdapter);
-			rxList.setOnItemClickListener(rxOnItemClickListener);
-		}
+            RXAdapter rxAdapter = new RXAdapter(RXMenuActivity.this, reflexes);
+            rxList.setAdapter(rxAdapter);
+            rxList.setOnItemClickListener(rxOnItemClickListener);
+        }
 
-		@Override
-		public void onServiceDisconnected(ComponentName className) {
-			Log.d("RXMenuActivity", "onServiceDisconnected");
-			serviceBinder = null;
-		}
-	};
+        @Override
+        public void onServiceDisconnected(ComponentName className) {
+            Log.d("RXMenuActivity", "onServiceDisconnected");
+            serviceBinder = null;
+        }
+    };
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_menu);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_menu);
 
-		initUI();
-	}
+        initUI();
+    }
 
-	private void initUI() {
-		rxList = (ListView) findViewById(R.id.rx_list);
-	}
+    private void initUI() {
+        rxList = (ListView)findViewById(R.id.rx_list);
+    }
 
-	private final OnItemClickListener rxOnItemClickListener = new OnItemClickListener() {
+    private final OnItemClickListener rxOnItemClickListener = new OnItemClickListener() {
 
-		@Override
-		public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
+        @Override
+        public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
 
-			Intent intent = new Intent(RXMenuActivity.this, RXCreateActivity.class);
-			intent.putExtra(RXCreateActivity.REFLEX_INDEX, index);
-			startActivity(intent);
+            Intent intent = new Intent(RXMenuActivity.this, RXCreateActivity.class);
+            intent.putExtra(RXCreateActivity.REFLEX_INDEX, index);
+            startActivity(intent);
 
-		}
-	};
+        }
+    };
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		bindService(new Intent(this, RXService.class), connection, Context.BIND_AUTO_CREATE);
-	}
+        bindService(new Intent(this, RXService.class), connection, Context.BIND_AUTO_CREATE);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-		unbindService(connection);
-	}
+        unbindService(connection);
+    }
 
-	@Override
-	public void onPanelClosed(int featureId, android.view.Menu menu) {
-		// TODO Auto-generated method stub
-		super.onPanelClosed(featureId, menu);
+    @Override
+    public void onPanelClosed(int featureId, android.view.Menu menu) {
+        // TODO Auto-generated method stub
+        super.onPanelClosed(featureId, menu);
 
-	}
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add("Add new Stimuli").setIcon(android.R.drawable.ic_input_add)
-				.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		return super.onCreateOptionsMenu(menu);
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Add new Stimuli").setIcon(android.R.drawable.ic_input_add)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
 
-		Toast.makeText(this, "Add new Stimuli", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, RXCreateActivity.class);
+        startActivity(intent);
 
-		Intent intent = new Intent(this, RXCreateActivity.class);
-		startActivity(intent);
-
-		return super.onMenuItemSelected(featureId, item);
-	}
+        return super.onMenuItemSelected(featureId, item);
+    }
 }

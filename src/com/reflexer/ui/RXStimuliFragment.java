@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.reflexer.R;
 import com.reflexer.model.RXConditionDefinition;
@@ -43,6 +44,10 @@ public class RXStimuliFragment extends Fragment {
 	 */
 	private int selectedIndex;
 
+	private ImageView stimuliImage;
+
+	private TextView stimuliName;
+
 	/**
 	 * Layout that holds the views for defining the conditions.
 	 */
@@ -60,6 +65,7 @@ public class RXStimuliFragment extends Fragment {
 
 	public RXStimuliFragment() {
 		super();
+		getStimuliDefinitions();
 	}
 
 	public void setReflex(RXReflex reflex) {
@@ -67,15 +73,22 @@ public class RXStimuliFragment extends Fragment {
 
 		showConditions();
 		updateConditions();
+		updateStimuliIndex(reflex);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_stimuli, null);
 
-		getStimuliDefinitions();
 		setupStimuliPicker(view);
 		conditionsLayout = (LinearLayout) view.findViewById(R.id.conditions_layout);
+
+		stimuliImage = (ImageView) view.findViewById(R.id.image);
+		stimuliName = (TextView) view.findViewById(R.id.label);
+
+		setupStimuliPicker(view);
+		showStimuli(selectedIndex);
+
 		return view;
 	}
 
@@ -87,7 +100,13 @@ public class RXStimuliFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
+				Log.d("RXStimuliFragment", "left");
+				selectedIndex = (selectedIndex - 1);
+				if (selectedIndex < 0) {
+					selectedIndex = stimuliDefinitions.size() - 1;
+				}
 
+				showStimuli(selectedIndex);
 			}
 		});
 
@@ -95,7 +114,10 @@ public class RXStimuliFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
+				Log.d("RXStimuliFragment", "right");
+				selectedIndex = (selectedIndex + 1) % stimuliDefinitions.size();
 
+				showStimuli(selectedIndex);
 			}
 		});
 	}
@@ -105,6 +127,30 @@ public class RXStimuliFragment extends Fragment {
 			this.stimuliDefinitions = RXStimuli.getStimuliDefinitions(getActivity());
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Sets the stimuli index to match index of the stimuli used in reflex
+	 * 
+	 * 
+	 * @param reflex
+	 */
+	private void updateStimuliIndex(RXReflex reflex) {
+		RXStimuliDefinition def = reflex.getStimuli().getDefinition();
+
+		for (int i = 0; i < stimuliDefinitions.size(); i++) {
+			if (stimuliDefinitions.get(i).getName().equals(def.getName())) {
+				selectedIndex = i;
+				showStimuli(selectedIndex);
+			}
+		}
+
+	}
+
+	private void showStimuli(int index) {
+		if (stimuliName != null) {
+			stimuliName.setText(stimuliDefinitions.get(index).getName());
 		}
 	}
 

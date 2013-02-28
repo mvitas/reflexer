@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 
 import com.reflexer.R;
 import com.reflexer.model.RXConditionDefinition;
+import com.reflexer.model.RXReflex;
 import com.reflexer.model.RXStimuli;
 import com.reflexer.model.RXStimuliCondition;
 import com.reflexer.model.RXStimuliDefinition;
@@ -33,9 +34,9 @@ import java.util.ArrayList;
 public class RXStimuliFragment extends Fragment {
 
 	/**
-	 * RXStimuli that is represented by this fragment.
+	 * Reflex that is being updated or created.
 	 */
-	private RXStimuli stimuli;
+	private RXReflex reflex;
 
 	/**
 	 * Index of the selected stimuli type in the stimuli definitions array.
@@ -57,24 +58,15 @@ public class RXStimuliFragment extends Fragment {
 		return fragment;
 	}
 
-	public static RXStimuliFragment newInstance(RXStimuli stimuli) {
-		RXStimuliFragment fragment = new RXStimuliFragment(stimuli);
-		return fragment;
-	}
-
 	public RXStimuliFragment() {
 		super();
 	}
 
-	/**
-	 * Constructor that is called when editing an existing reflex. (stimuli is
-	 * allready selected)
-	 * 
-	 * @param definition
-	 */
-	public RXStimuliFragment(RXStimuli stimuli) {
-		this.stimuli = stimuli;
+	public void setReflex(RXReflex reflex) {
+		this.reflex = reflex;
+
 		showConditions();
+		updateConditions();
 	}
 
 	@Override
@@ -82,15 +74,8 @@ public class RXStimuliFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_stimuli, null);
 
 		getStimuliDefinitions();
-
 		setupStimuliPicker(view);
-
 		conditionsLayout = (LinearLayout) view.findViewById(R.id.conditions_layout);
-
-		if (stimuli == null) {
-			initStimuliFromDefinitions(0);
-		}
-
 		return view;
 	}
 
@@ -123,11 +108,6 @@ public class RXStimuliFragment extends Fragment {
 		}
 	}
 
-	private void initStimuliFromDefinitions(int index) {
-		this.stimuli = new RXStimuli(stimuliDefinitions.get(index));
-		showConditions();
-	}
-
 	/**
 	 * Shows the conditions for the selected stimuli.
 	 */
@@ -135,7 +115,7 @@ public class RXStimuliFragment extends Fragment {
 		conditionViews.clear();
 		conditionsLayout.removeAllViews();
 
-		for (RXConditionDefinition condDef : stimuli.getDefinition().getConditionDefinitons()) {
+		for (RXConditionDefinition condDef : reflex.getStimuli().getDefinition().getConditionDefinitons()) {
 			RXTypeView conditionView = RXTypeView.createView(getActivity(), condDef.getName(), condDef.getType());
 			conditionView.setRequired(condDef.isRequired());
 			conditionView.setEnabled(condDef.getDependsOn().size() == 0);
@@ -143,7 +123,7 @@ public class RXStimuliFragment extends Fragment {
 
 				@Override
 				public void onValueChanged(String name, Object value) {
-					stimuli.setCondition(new RXStimuliCondition(name, value));
+					reflex.getStimuli().setCondition(new RXStimuliCondition(name, value));
 
 					updateConditions();
 				}
@@ -158,13 +138,14 @@ public class RXStimuliFragment extends Fragment {
 
 	private void updateConditions() {
 		for (RXTypeView typeView : conditionViews) {
-			RXConditionDefinition condDef = stimuli.getDefinition().getConditionDefinitionByName(typeView.getName());
+			RXConditionDefinition condDef = reflex.getStimuli().getDefinition()
+					.getConditionDefinitionByName(typeView.getName());
 
 			if (condDef.getDependsOn().size() > 0) {
 				typeView.setEnabled(true);
 
 				for (RXConditionDefinition dependency : condDef.getDependsOn()) {
-					RXStimuliCondition cond = stimuli.getConditionByName(dependency.getName());
+					RXStimuliCondition cond = reflex.getStimuli().getConditionByName(dependency.getName());
 					if (cond == null || cond.getValue() == null) {
 						typeView.setEnabled(false);
 						break;

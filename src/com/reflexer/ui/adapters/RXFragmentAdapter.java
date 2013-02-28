@@ -12,7 +12,7 @@ import com.reflexer.ui.RXStimuliFragment;
 
 public class RXFragmentAdapter extends FragmentPagerAdapter {
 
-	protected static final String[] CONTENT = new String[] { "NAME", "STIMULI", "REACTION" };
+	protected static final String[] CONTENT = new String[] { "Name", "Stimuli", "Reaction" };
 
 	private final Context context;
 	private RXReflex reflex;
@@ -33,8 +33,15 @@ public class RXFragmentAdapter extends FragmentPagerAdapter {
 		reactionFragment = RXReactionFragment.newInstance();
 	}
 
+	/**
+	 * Sets the reflex that is being edited from the fragment tabs in this
+	 * adaper.
+	 * 
+	 * @param reflex
+	 */
 	public void setReflex(RXReflex reflex) {
 		nameFragment.setReflex(reflex);
+		stimuliFragment.setReflex(reflex);
 	}
 
 	@Override

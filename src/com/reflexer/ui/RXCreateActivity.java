@@ -1,4 +1,3 @@
-
 package com.reflexer.ui;
 
 import android.app.Activity;
@@ -18,26 +17,28 @@ import java.util.ArrayList;
 
 public class RXCreateActivity extends SherlockFragmentActivity {
 
-    private ViewPager mPager;
-    private TabPageIndicator mIndicator;
-    private RXFragmentAdapter mAdapter;
+	public static final String REFLEX_INDEX = "reflex-index";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	private ViewPager mPager;
+	private TabPageIndicator mIndicator;
+	private RXFragmentAdapter mAdapter;
 
-        setContentView(R.layout.activity_create);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setTitle("Create");
+		setContentView(R.layout.activity_create);
 
-        mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager());
+		getSupportActionBar().setTitle("Create");
 
-        mPager = (ViewPager)findViewById(R.id.pager);
-        mPager.setAdapter(mAdapter);
+		mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager());
 
-        mIndicator = (TabPageIndicator)findViewById(R.id.indicator);
-        mIndicator.setViewPager(mPager);
+		mPager = (ViewPager) findViewById(R.id.pager);
+		mPager.setAdapter(mAdapter);
 
-    }
+		mIndicator = (TabPageIndicator) findViewById(R.id.indicator);
+		mIndicator.setViewPager(mPager);
+
+	}
 
 }

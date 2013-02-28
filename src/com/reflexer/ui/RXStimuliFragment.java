@@ -5,18 +5,17 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import antistatic.spinnerwheel.AbstractWheel;
-import antistatic.spinnerwheel.OnWheelChangedListener;
 
 import com.reflexer.R;
 import com.reflexer.model.RXConditionDefinition;
 import com.reflexer.model.RXStimuli;
 import com.reflexer.model.RXStimuliCondition;
-import com.reflexer.ui.adapters.RXStimuliAdapter;
+import com.reflexer.model.RXStimuliDefinition;
 import com.reflexer.ui.views.RXTypeView;
 import com.reflexer.ui.views.RXTypeView.OnValueChangedListener;
 
@@ -39,9 +38,16 @@ public class RXStimuliFragment extends Fragment {
 	private RXStimuli stimuli;
 
 	/**
+	 * Index of the selected stimuli type in the stimuli definitions array.
+	 */
+	private int selectedIndex;
+
+	/**
 	 * Layout that holds the views for defining the conditions.
 	 */
 	private LinearLayout conditionsLayout;
+
+	private ArrayList<RXStimuliDefinition> stimuliDefinitions;
 
 	private final ArrayList<RXTypeView> conditionViews = new ArrayList<RXTypeView>();
 
@@ -58,7 +64,6 @@ public class RXStimuliFragment extends Fragment {
 
 	public RXStimuliFragment() {
 		super();
-
 	}
 
 	/**
@@ -69,38 +74,58 @@ public class RXStimuliFragment extends Fragment {
 	 */
 	public RXStimuliFragment(RXStimuli stimuli) {
 		this.stimuli = stimuli;
+		showConditions();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_stimuli, null);
 
-		AbstractWheel stimuliWheel = (AbstractWheel) view.findViewById(R.id.stimuli);
-		stimuliWheel.setViewAdapter(new RXStimuliAdapter(getActivity()));
-		stimuliWheel.setVisibleItems(5);
-		stimuliWheel.setCyclic(true);
-		stimuliWheel.addChangingListener(new OnWheelChangedListener() {
+		getStimuliDefinitions();
 
-			@Override
-			public void onChanged(AbstractWheel wheel, int oldValue, int newValue) {
-				Log.d("RXStimuliFragment", "OnWheelChanged: " + newValue);
-
-				initStimuliFromDefinitions(newValue);
-			}
-		});
+		setupStimuliPicker(view);
 
 		conditionsLayout = (LinearLayout) view.findViewById(R.id.conditions_layout);
+
+		if (stimuli == null) {
+			initStimuliFromDefinitions(0);
+		}
 
 		return view;
 	}
 
-	private void initStimuliFromDefinitions(int index) {
+	private void setupStimuliPicker(View rootView) {
+		ImageView leftStimuliPicker = (ImageView) rootView.findViewById(R.id.stimuli_picker_left);
+		ImageView rightStimuliPicker = (ImageView) rootView.findViewById(R.id.stimuli_picker_right);
+
+		leftStimuliPicker.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
+
+		rightStimuliPicker.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
+	}
+
+	private void getStimuliDefinitions() {
 		try {
-			this.stimuli = new RXStimuli(RXStimuli.getStimuliDefinitions(getActivity()).get(index));
-			showConditions();
+			this.stimuliDefinitions = RXStimuli.getStimuliDefinitions(getActivity());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void initStimuliFromDefinitions(int index) {
+		this.stimuli = new RXStimuli(stimuliDefinitions.get(index));
+		showConditions();
 	}
 
 	/**

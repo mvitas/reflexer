@@ -1,61 +1,37 @@
-
 package com.reflexer.ui.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.CheckBox;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.reflexer.R;
-import com.reflexer.ui.dummy.RXItem;
+import com.reflexer.model.RXReflex;
 
 import java.util.ArrayList;
 
-public class RXAdapter extends BaseAdapter {
+public class RXAdapter extends ArrayAdapter<RXReflex> {
 
-    Context context;
-    ArrayList<RXItem> items;
+	public RXAdapter(Context context, ArrayList<RXReflex> items) {
+		super(context, R.layout.list_item_rx, items);
+	}
 
-    public RXAdapter(Context context, ArrayList<RXItem> items) {
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		if (convertView == null) {
+			convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_rx, null);
+		}
 
-        this.context = context;
-        this.items = items;
-    }
+		TextView rxName = (TextView) convertView.findViewById(R.id.rx_name_label);
+		// CheckBox rxCheckbox =
+		// (CheckBox)convertView.findViewById(R.id.rx_checkbox);
 
-    @Override
-    public int getCount() {
-        return items.size();
-    }
+		rxName.setText(getItem(position).getName());
+		// rxCheckbox.setChecked(getItem(position).isEnabled());
 
-    
-    public RXItem getItem(int position) {
-        return items.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_item_rx, null);
-        }
-        
-        TextView rxName = (TextView)convertView.findViewById(R.id.rx_name_label);
-//        CheckBox rxCheckbox = (CheckBox)convertView.findViewById(R.id.rx_checkbox);
-        
-        
-        rxName.setText(getItem(position).getName());
-//        rxCheckbox.setChecked(getItem(position).isEnabled());
-
-        return convertView;
-    }
+		return convertView;
+	}
 
 }

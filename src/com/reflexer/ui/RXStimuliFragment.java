@@ -69,6 +69,7 @@ public class RXStimuliFragment extends Fragment {
 	 */
 	public RXStimuliFragment(RXStimuli stimuli) {
 		this.stimuli = stimuli;
+		showConditions();
 	}
 
 	@Override
@@ -77,7 +78,8 @@ public class RXStimuliFragment extends Fragment {
 
 		AbstractWheel stimuliWheel = (AbstractWheel) view.findViewById(R.id.stimuli);
 		stimuliWheel.setViewAdapter(new RXStimuliAdapter(getActivity()));
-		stimuliWheel.setVisibleItems(5);
+		// stimuliWheel.setVisibleItems(3);
+
 		stimuliWheel.setCyclic(true);
 		stimuliWheel.addChangingListener(new OnWheelChangedListener() {
 
@@ -90,6 +92,10 @@ public class RXStimuliFragment extends Fragment {
 		});
 
 		conditionsLayout = (LinearLayout) view.findViewById(R.id.conditions_layout);
+
+		if (stimuli == null) {
+			initStimuliFromDefinitions(0);
+		}
 
 		return view;
 	}

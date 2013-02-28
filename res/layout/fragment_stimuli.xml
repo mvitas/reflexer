@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res/com.reflexer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical" >
 
     <antistatic.spinnerwheel.WheelHorizontalView
         android:id="@+id/stimuli"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        app:visibleItems="7" />
+        app:selectionDividerWidth="1px" />
 
     <ScrollView
         android:id="@+id/conditions_scroll_view"

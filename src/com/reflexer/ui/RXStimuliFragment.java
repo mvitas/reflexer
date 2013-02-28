@@ -65,7 +65,7 @@ public class RXStimuliFragment extends Fragment {
 
 	public RXStimuliFragment() {
 		super();
-		getStimuliDefinitions();
+
 	}
 
 	public void setReflex(RXReflex reflex) {
@@ -80,6 +80,7 @@ public class RXStimuliFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_stimuli, null);
 
+		getStimuliDefinitions();
 		setupStimuliPicker(view);
 		conditionsLayout = (LinearLayout) view.findViewById(R.id.conditions_layout);
 

@@ -10,19 +10,21 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal" 
-        android:padding="15dp">
+        android:orientation="horizontal"
+        android:padding="15dp" >
 
         <ImageView
             android:id="@+id/stimuli_picker_left"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="20dp"
             android:src="@drawable/left_arrow" />
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:padding="5dp" >
@@ -46,7 +48,9 @@
         <ImageView
             android:id="@+id/stimuli_picker_right"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingRight="10dp"
+            android:paddingLeft="20dp"
             android:src="@drawable/right_arrow" />
     </LinearLayout>
 

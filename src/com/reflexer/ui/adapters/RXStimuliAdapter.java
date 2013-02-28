@@ -1,12 +1,10 @@
 package com.reflexer.ui.adapters;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import antistatic.spinnerwheel.adapters.AbstractWheelAdapter;
+import antistatic.spinnerwheel.adapters.AbstractWheelTextAdapter;
 
 import com.reflexer.R;
 import com.reflexer.model.RXStimuli;
@@ -14,12 +12,10 @@ import com.reflexer.model.RXStimuliDefinition;
 
 import java.io.IOException;
 
-public class RXStimuliAdapter extends AbstractWheelAdapter {
-
-	private final Context context;
+public class RXStimuliAdapter extends AbstractWheelTextAdapter {
 
 	public RXStimuliAdapter(Context context) {
-		this.context = context;
+		super(context, R.layout.list_item_stimuli, R.id.label);
 	}
 
 	@Override
@@ -35,20 +31,19 @@ public class RXStimuliAdapter extends AbstractWheelAdapter {
 
 	@Override
 	public View getItem(int index, View convertView, ViewGroup parent) {
-		if (convertView == null) {
-			convertView = LayoutInflater.from(context).inflate(R.layout.list_item_stimuli, null);
-		}
+		View view = super.getItem(index, convertView, parent);
+		return view;
+	}
 
-		RXStimuliDefinition definitino;
+	@Override
+	protected CharSequence getItemText(int index) {
 		try {
-			definitino = RXStimuli.getStimuliDefinitions(context).get(index);
-
-			TextView label = (TextView) convertView.findViewById(R.id.label);
-			label.setText(definitino.getName());
+			RXStimuliDefinition definition = RXStimuli.getStimuliDefinitions(context).get(index);
+			return "text";
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return convertView;
+		return null;
 	}
 }

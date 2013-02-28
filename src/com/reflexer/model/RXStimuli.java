@@ -113,6 +113,12 @@ public class RXStimuli {
 		this.conditionList = conditionList;
 	}
 
+	public RXStimuli(RXStimuliDefinition definition) {
+		this.id = RXDatabaseHelper.NEW_ITEM;
+		this.definition = definition;
+		this.conditionList = new ArrayList<RXStimuliCondition>();
+	}
+
 	/**
 	 * Checks if all the conditions that must be set in order to be able to set
 	 * the given condition (by name) are set.

@@ -10,21 +10,21 @@ import android.widget.TextView;
 
 import com.reflexer.R;
 
-public class RXStringView extends RXTypeView {
+public class RXIntView extends RXTypeView {
 
 	private final TextView nameTextView;
 
-	private final EditText stringValue;
+	private final EditText intValue;
 
-	public RXStringView(Context context) {
+	public RXIntView(Context context) {
 		super(context);
 
-		LinearLayout content = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.view_rx_string, null);
+		LinearLayout content = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.view_rx_int, null);
 		addView(content, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 		nameTextView = (TextView) content.findViewById(R.id.name);
-		stringValue = (EditText) content.findViewById(R.id.string_value);
-		stringValue.addTextChangedListener(new TextWatcher() {
+		intValue = (EditText) content.findViewById(R.id.int_value);
+		intValue.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -34,25 +34,23 @@ public class RXStringView extends RXTypeView {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-
 			}
 		});
 	}
 
 	@Override
 	public void setValue(Object value) {
-		stringValue.setText(value.toString());
+		intValue.setText(value.toString());
 	}
 
 	@Override
 	public Object getValue() {
-		return stringValue.getText().toString();
+		return Integer.parseInt(intValue.getText().toString());
 	}
 
 	@Override
@@ -63,12 +61,13 @@ public class RXStringView extends RXTypeView {
 
 	@Override
 	public void setRequired(boolean required) {
-		// TODO implement
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public boolean getRequired() {
-		// TODO not used yet
+		// TODO Auto-generated method stub
 		return false;
 	}
 

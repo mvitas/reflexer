@@ -71,9 +71,8 @@ public class RXStimuliFragment extends Fragment {
 	public void setReflex(RXReflex reflex) {
 		this.reflex = reflex;
 
-		showConditions();
-		updateConditions();
 		updateStimuliIndex(reflex);
+		showStimuli(selectedIndex);
 	}
 
 	@Override
@@ -81,14 +80,16 @@ public class RXStimuliFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_stimuli, null);
 
 		getStimuliDefinitions();
-		setupStimuliPicker(view);
 		conditionsLayout = (LinearLayout) view.findViewById(R.id.conditions_layout);
 
 		stimuliImage = (ImageView) view.findViewById(R.id.image);
 		stimuliName = (TextView) view.findViewById(R.id.label);
 
 		setupStimuliPicker(view);
-		showStimuli(selectedIndex);
+
+		if (reflex != null) {
+			showStimuli(selectedIndex);
+		}
 
 		return view;
 	}
@@ -101,12 +102,12 @@ public class RXStimuliFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				Log.d("RXStimuliFragment", "left");
 				selectedIndex = (selectedIndex - 1);
 				if (selectedIndex < 0) {
 					selectedIndex = stimuliDefinitions.size() - 1;
 				}
 
+				updateStimuli(selectedIndex);
 				showStimuli(selectedIndex);
 			}
 		});
@@ -115,9 +116,9 @@ public class RXStimuliFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				Log.d("RXStimuliFragment", "right");
 				selectedIndex = (selectedIndex + 1) % stimuliDefinitions.size();
 
+				updateStimuli(selectedIndex);
 				showStimuli(selectedIndex);
 			}
 		});
@@ -149,9 +150,19 @@ public class RXStimuliFragment extends Fragment {
 
 	}
 
+	private void updateStimuli(int index) {
+		RXStimuliDefinition def = stimuliDefinitions.get(index);
+		RXStimuli stimuli = new RXStimuli(def);
+		reflex.setStimuli(stimuli);
+	}
+
 	private void showStimuli(int index) {
+		Log.d("showStimuli()", "index: " + index);
 		if (stimuliName != null) {
 			stimuliName.setText(stimuliDefinitions.get(index).getName());
+
+			showConditions();
+			updateConditions();
 		}
 	}
 
@@ -159,6 +170,7 @@ public class RXStimuliFragment extends Fragment {
 	 * Shows the conditions for the selected stimuli.
 	 */
 	private void showConditions() {
+		Log.d("showConditions()", "show");
 		conditionViews.clear();
 		conditionsLayout.removeAllViews();
 
@@ -179,7 +191,6 @@ public class RXStimuliFragment extends Fragment {
 			conditionViews.add(conditionView);
 			conditionsLayout.addView(conditionView, new LayoutParams(LayoutParams.FILL_PARENT,
 					LayoutParams.WRAP_CONTENT));
-			Log.d("showConditions", "added: " + condDef.getName());
 		}
 	}
 

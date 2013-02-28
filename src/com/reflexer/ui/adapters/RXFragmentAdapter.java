@@ -42,6 +42,7 @@ public class RXFragmentAdapter extends FragmentPagerAdapter {
 	public void setReflex(RXReflex reflex) {
 		nameFragment.setReflex(reflex);
 		stimuliFragment.setReflex(reflex);
+		reactionFragment.setReflex(reflex);
 	}
 
 	@Override

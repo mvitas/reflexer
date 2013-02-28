@@ -1,161 +1,182 @@
-
 package com.reflexer.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-
-import antistatic.spinnerwheel.AbstractWheel;
-import antistatic.spinnerwheel.OnWheelChangedListener;
+import android.widget.TextView;
 
 import com.reflexer.R;
-import com.reflexer.model.RXConditionDefinition;
 import com.reflexer.model.RXPropertyDefinition;
 import com.reflexer.model.RXReaction;
 import com.reflexer.model.RXReactionDefinition;
-import com.reflexer.model.RXStimuli;
-import com.reflexer.model.RXStimuliCondition;
-import com.reflexer.ui.adapters.RXStimuliAdapter;
+import com.reflexer.model.RXReactionProperty;
+import com.reflexer.model.RXReflex;
 import com.reflexer.ui.views.RXTypeView;
 import com.reflexer.ui.views.RXTypeView.OnValueChangedListener;
-
-import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class RXReactionFragment extends Fragment {
 
-    ArrayList<String> list = new ArrayList<String>();
-    RXReaction reaction;
-    private ArrayList<RXReactionDefinition> reactions;
-    private LinearLayout conditionsLayout;
-    private final ArrayList<RXTypeView> conditionViews = new ArrayList<RXTypeView>();
+	/**
+	 * Reflex that is being updated or created.
+	 */
+	private RXReflex reflex;
 
-    public static RXReactionFragment newInstance() {
-        RXReactionFragment fragment = new RXReactionFragment();
+	/**
+	 * Index of the selected stimuli type in the stimuli definitions array.
+	 */
+	private int selectedIndex;
 
-        return fragment;
-    }
+	private ImageView reactionImage;
 
-    public static RXReactionFragment newInstance(RXReaction reaction) {
-        RXReactionFragment fragment = new RXReactionFragment(reaction);
+	private TextView reactionName;
 
-        return fragment;
-    }
+	private ArrayList<RXReactionDefinition> reactionDefinitions;
 
-    public RXReactionFragment(RXReaction reaction) {
-        this.reaction = reaction;
-        showConditions();
-    }
+	private LinearLayout propertiesLayout;
 
-    public RXReactionFragment() {
+	private final ArrayList<RXTypeView> propertyViews = new ArrayList<RXTypeView>();
 
-    }
+	public static RXReactionFragment newInstance() {
+		RXReactionFragment fragment = new RXReactionFragment();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return fragment;
+	}
 
-        View view = inflater.inflate(R.layout.fragment_reaction, null);
+	public RXReactionFragment() {
+		super();
+	}
 
-        getReactionDefinitions();
+	public void setReflex(RXReflex reflex) {
+		this.reflex = reflex;
 
-        setupReactionPicker(view);
+		updateReactionIndex(reflex);
+		showReaction(selectedIndex);
+	}
 
-        conditionsLayout = (LinearLayout)view.findViewById(R.id.conditions_layout);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_reaction, null);
 
-        if (reaction == null) {
-            initReactionFromDefinitions(0);
-        }
+		getReactionDefinitions();
+		propertiesLayout = (LinearLayout) view.findViewById(R.id.properties_layout);
 
-        return view;
-    }
+		reactionImage = (ImageView) view.findViewById(R.id.image);
+		reactionName = (TextView) view.findViewById(R.id.label);
 
-    private void setupReactionPicker(View rootView) {
-        ImageView leftReactionPicker = (ImageView)rootView.findViewById(R.id.stimuli_picker_left);
-        ImageView rightReactionPicker = (ImageView)rootView.findViewById(R.id.stimuli_picker_right);
+		setupReactionPicker(view);
 
-        leftReactionPicker.setOnClickListener(new OnClickListener() {
+		if (reflex != null) {
+			showReaction(selectedIndex);
+		}
 
-            @Override
-            public void onClick(View v) {
+		return view;
+	}
 
-            }
-        });
+	private void setupReactionPicker(View rootView) {
+		ImageView leftReactionPicker = (ImageView) rootView.findViewById(R.id.reaction_picker_left);
+		ImageView rightReactionPicker = (ImageView) rootView.findViewById(R.id.reaction_picker_right);
 
-        rightReactionPicker.setOnClickListener(new OnClickListener() {
+		leftReactionPicker.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
+			@Override
+			public void onClick(View v) {
+				selectedIndex = (selectedIndex - 1);
+				if (selectedIndex < 0) {
+					selectedIndex = reactionDefinitions.size() - 1;
+				}
 
-            }
-        });
-    }
+				updateReaction(selectedIndex);
+				showReaction(selectedIndex);
+			}
+		});
 
-    private void getReactionDefinitions() {
+		rightReactionPicker.setOnClickListener(new OnClickListener() {
 
-        try {
-            reactions = RXReaction.getReactionDefinitions(getActivity());
-            for (RXReactionDefinition reaction : reactions) {
-                list.add(reaction.getName());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+			@Override
+			public void onClick(View v) {
+				selectedIndex = (selectedIndex + 1) % reactionDefinitions.size();
 
-    private void initReactionFromDefinitions(int index) {
-        this.reaction = RXReaction.createReaction(getActivity(), reactions.get(index).getName());
-        showConditions();
-    }
+				updateReaction(selectedIndex);
+				showReaction(selectedIndex);
+			}
+		});
+	}
 
-    private void showConditions() {
+	private void getReactionDefinitions() {
+		try {
+			this.reactionDefinitions = RXReaction.getReactionDefinitions(getActivity());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-        conditionViews.clear();
-        conditionsLayout.removeAllViews();
+	private void updateReactionIndex(RXReflex reflex) {
+		RXReactionDefinition def = reflex.getReaction().getDefinition();
 
-        for (RXPropertyDefinition propDef : reaction.getDefinition().getPropertyDefinitions()) {
-            RXTypeView propertyView = RXTypeView.createView(getActivity(), propDef.getName(), propDef.getType());
-            propertyView.setRequired(propDef.isRequired());
-            // propertyView.setEnabled(propDef.getDependsOn().size() == 0);
-            propertyView.setOnValueChangedListener(new OnValueChangedListener() {
+		if (reactionDefinitions == null) {
+			getReactionDefinitions();
+		}
 
-                @Override
-                public void onValueChanged(String name, Object value) {
-                    // reaction.addParam()
+		for (int i = 0; i < reactionDefinitions.size(); i++) {
+			if (reactionDefinitions.get(i).getName().equals(def.getName())) {
+				selectedIndex = i;
+				showReaction(selectedIndex);
+			}
+		}
+	}
 
-                    updateConditions();
-                }
-            });
+	private void updateReaction(int index) {
+		RXReactionDefinition def = reactionDefinitions.get(index);
+		RXReaction reaction = RXReaction.createReaction(def);
+		reflex.setReaction(reaction);
+	}
 
-            conditionViews.add(propertyView);
-            conditionViews.add(propertyView);
-            conditionsLayout.addView(propertyView,
-                    new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-            Log.d("showConditions", "added: " + propDef.getName());
+	private void showReaction(int index) {
+		if (reactionName != null) {
+			reactionName.setText(reactionDefinitions.get(index).getName());
 
-        }
+			showProperties();
+			updateProperties();
+		}
+	}
 
-    }
+	private void showProperties() {
+		propertyViews.clear();
+		propertiesLayout.removeAllViews();
 
-    private void updateConditions() {
-        for (RXTypeView typeView : conditionViews) {
-            RXPropertyDefinition propDef = reaction.getDefinition().getPropertyDefinitionByName(typeView.getName());
+		for (RXPropertyDefinition propDef : reflex.getReaction().getDefinition().getPropertyDefinitions()) {
+			RXTypeView propertyView = RXTypeView.createView(getActivity(), propDef.getName(), propDef.getType());
+			propertyView.setRequired(propDef.isRequired());
+			// propertyView.setEnabled(propDef.getDependsOn().size() == 0);
+			propertyView.setOnValueChangedListener(new OnValueChangedListener() {
 
-            typeView.setEnabled(true);
+				@Override
+				public void onValueChanged(String name, Object value) {
+					// reaction.addParam()
+					reflex.getReaction().setParam(new RXReactionProperty(name, value));
 
-        }
+					updateProperties();
+				}
+			});
 
-    }
+			propertyViews.add(propertyView);
+			propertiesLayout.addView(propertyView,
+					new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+
+		}
+
+	}
+
+	private void updateProperties() {
+
+	}
 }

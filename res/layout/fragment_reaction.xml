@@ -4,13 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-<!--     <Spinner -->
-<!--         android:id="@+id/reaction_spinner" -->
-<!--         android:layout_width="wrap_content" -->
-<!--         android:layout_height="wrap_content" /> -->
 
     <LinearLayout
-        android:id="@+id/stimuli_picker_layout"
+        android:id="@+id/reaction_picker_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -18,13 +14,15 @@
         android:padding="15dp" >
 
         <ImageView
-            android:id="@+id/stimuli_picker_left"
+            android:id="@+id/reaction_picker_left"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="20dp"
             android:src="@drawable/left_arrow" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
@@ -40,7 +38,7 @@
 
             <TextView
                 android:id="@+id/label"
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:lines="1"
@@ -48,20 +46,22 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/stimuli_picker_right"
+            android:id="@+id/reaction_picker_right"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingRight="10dp"
+            android:paddingLeft="20dp"
             android:src="@drawable/right_arrow" />
     </LinearLayout>
 
     <ScrollView
-        android:id="@+id/conditions_scroll_view"
+        android:id="@+id/properties_scroll_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
 
         <LinearLayout
-            android:id="@+id/conditions_layout"
+            android:id="@+id/properties_layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >

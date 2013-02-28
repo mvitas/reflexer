@@ -28,15 +28,15 @@ public class RXReflex implements IRXReflexListener {
 	public RXReflex(String name, RXStimuli stimuli, RXReaction rection) {
 		this.name = name;
 		this.setId(RXDatabaseHelper.NEW_ITEM);
-		this.setRxThis(stimuli);
-		this.setRxThat(rection);
+		this.setStimuli(stimuli);
+		this.setReaction(rection);
 	}
 
 	public RXReflex(int id, String name, RXStimuli stimuli, RXReaction reaction) {
 		this.name = name;
 		this.setId(id);
-		this.setRxThis(stimuli);
-		this.setRxThat(reaction);
+		this.setStimuli(stimuli);
+		this.setReaction(reaction);
 	}
 
 	public String getGroupName() {
@@ -55,11 +55,11 @@ public class RXReflex implements IRXReflexListener {
 		this.groupName = groupName;
 	}
 
-	public void setRxThat(RXReaction rxThat) {
+	public void setReaction(RXReaction rxThat) {
 		this.reaction = rxThat;
 	}
 
-	public void setRxThis(RXStimuli rxThis) {
+	public void setStimuli(RXStimuli rxThis) {
 		this.stimuli = rxThis;
 	}
 

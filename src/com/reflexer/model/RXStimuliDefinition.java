@@ -57,4 +57,14 @@ public class RXStimuliDefinition {
 		return conditionDefinitons;
 	}
 
+	public RXConditionDefinition getConditionDefinitionByName(String name) {
+		for (RXConditionDefinition definition : conditionDefinitons) {
+			if (definition.getName().equals(name)) {
+				return definition;
+			}
+		}
+
+		return null;
+	}
+
 }

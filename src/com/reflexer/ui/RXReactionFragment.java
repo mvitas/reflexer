@@ -40,6 +40,21 @@ public class RXReactionFragment extends Fragment {
         return fragment;
     }
 
+    public static RXReactionFragment newInstance(RXReaction reaction) {
+        RXReactionFragment fragment = new RXReactionFragment(reaction);
+
+        return fragment;
+    }
+
+    public RXReactionFragment(RXReaction reaction) {
+        this.reaction = reaction;
+        showConditions();
+    }
+
+    public RXReactionFragment() {
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 

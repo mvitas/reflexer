@@ -1,6 +1,7 @@
 package com.reflexer.ui;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.reflexer.R;
 import com.reflexer.model.RXReflex;
 import com.reflexer.service.RXBinder;
+import com.reflexer.service.RXService;
 import com.reflexer.ui.adapters.RXAdapter;
 
 import java.util.ArrayList;
@@ -83,12 +85,21 @@ public class RXMenuActivity extends SherlockActivity {
 	protected void onResume() {
 		super.onResume();
 
+		bindService(new Intent(this, RXService.class), mConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		unbindService(mConnection);
 	}
 
 	@Override
 	public void onPanelClosed(int featureId, android.view.Menu menu) {
 		// TODO Auto-generated method stub
 		super.onPanelClosed(featureId, menu);
+
 	}
 
 	@Override

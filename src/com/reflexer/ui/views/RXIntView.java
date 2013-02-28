@@ -2,6 +2,7 @@ package com.reflexer.ui.views;
 
 import android.content.Context;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.widget.EditText;
@@ -50,7 +51,11 @@ public class RXIntView extends RXTypeView {
 
 	@Override
 	public Object getValue() {
-		return Integer.parseInt(intValue.getText().toString());
+		if (!TextUtils.isEmpty(intValue.getText())) {
+			return Integer.parseInt(intValue.getText().toString());
+		} else {
+			return null;
+		}
 	}
 
 	@Override

@@ -60,33 +60,39 @@ public class RXCreateActivity extends SherlockFragmentActivity {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder binder) {
 			serviceBinder = ((RXBinder) binder);
-			setupTabs();
+
+			int reflexIndex = NO_INDEX_SET;
+			if (getIntent().getExtras() != null) {
+				reflexIndex = getIntent().getExtras().getInt(REFLEX_INDEX, NO_INDEX_SET);
+			}
+
+			update = reflexIndex != NO_INDEX_SET;
+
+			if (!update) {
+				reflex = createDefaultReflex();
+			} else {
+				reflex = getReflexWidthIndex(reflexIndex);
+			}
+
+			mAdapter.setReflex(reflex);
 		}
 	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.activity_create);
-
-		int reflexIndex = NO_INDEX_SET;
-		if (getIntent().getExtras() != null) {
-			reflexIndex = getIntent().getExtras().getInt(REFLEX_INDEX, NO_INDEX_SET);
-		}
-
-		update = reflexIndex != NO_INDEX_SET;
-
-		if (!update) {
-			reflex = createDefaultReflex();
-		} else {
-			reflex = getReflexWidthIndex(reflexIndex);
-		}
-
-		mAdapter.setReflex(reflex);
 
 		getSupportActionBar().setTitle("Create");
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+		mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager());
+
+		mPager = (ViewPager) findViewById(R.id.pager);
+		mPager.setAdapter(mAdapter);
+
+		mIndicator = (TabPageIndicator) findViewById(R.id.indicator);
+		mIndicator.setViewPager(mPager);
 	}
 
 	@Override
@@ -103,27 +109,6 @@ public class RXCreateActivity extends SherlockFragmentActivity {
 		bindService(new Intent(this, RXService.class), connection, Context.BIND_AUTO_CREATE);
 
 	};
-
-	private void setupTabs() {
-		mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager());
-		int reflexIndex = getIntent().getExtras().getInt(REFLEX_INDEX, NO_INDEX_SET);
-
-		update = reflexIndex != NO_INDEX_SET;
-
-		if (!update) {
-			createDefaultReflex();
-		} else {
-			getReflexWidthIndex(reflexIndex);
-		}
-
-		mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager());
-
-		mPager = (ViewPager) findViewById(R.id.pager);
-		mPager.setAdapter(mAdapter);
-
-		mIndicator = (TabPageIndicator) findViewById(R.id.indicator);
-		mIndicator.setViewPager(mPager);
-	}
 
 	private RXStimuli createDefaultStimuli() {
 		try {

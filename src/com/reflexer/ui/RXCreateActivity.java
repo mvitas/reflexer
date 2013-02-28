@@ -4,11 +4,17 @@ package com.reflexer.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.reflexer.R;
+import com.reflexer.model.RXReaction;
+import com.reflexer.model.RXReactionDefinition;
 import com.reflexer.ui.adapters.RXFragmentAdapter;
 import com.viewpagerindicator.TabPageIndicator;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class RXCreateActivity extends SherlockFragmentActivity {
 

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -19,10 +20,17 @@ import antistatic.spinnerwheel.AbstractWheel;
 import antistatic.spinnerwheel.OnWheelChangedListener;
 
 import com.reflexer.R;
+import com.reflexer.model.RXConditionDefinition;
+import com.reflexer.model.RXPropertyDefinition;
 import com.reflexer.model.RXReaction;
 import com.reflexer.model.RXReactionDefinition;
 import com.reflexer.model.RXStimuli;
+import com.reflexer.model.RXStimuliCondition;
 import com.reflexer.ui.adapters.RXStimuliAdapter;
+import com.reflexer.ui.views.RXTypeView;
+import com.reflexer.ui.views.RXTypeView.OnValueChangedListener;
+
+import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +41,7 @@ public class RXReactionFragment extends Fragment {
     RXReaction reaction;
     private ArrayList<RXReactionDefinition> reactions;
     private LinearLayout conditionsLayout;
+    private final ArrayList<RXTypeView> conditionViews = new ArrayList<RXTypeView>();
 
     public static RXReactionFragment newInstance() {
         RXReactionFragment fragment = new RXReactionFragment();
@@ -112,6 +121,52 @@ public class RXReactionFragment extends Fragment {
     }
 
     private void showConditions() {
+
+        conditionViews.clear();
+        conditionsLayout.removeAllViews();
+
+        for (RXPropertyDefinition propDef : reaction.getDefinition().getPropertyDefinitions()) {
+            RXTypeView propertyView = RXTypeView.createView(getActivity(), propDef.getName(), propDef.getType());
+            propertyView.setRequired(propDef.isRequired());
+            // propertyView.setEnabled(propDef.getDependsOn().size() == 0);
+            propertyView.setOnValueChangedListener(new OnValueChangedListener() {
+
+                @Override
+                public void onValueChanged(String name, Object value) {
+                    reaction.addParam()
+                    
+                    
+                    updateConditions();
+                }
+            });
+
+            conditionViews.add(propertyView);
+            conditionViews.add(propertyView);
+            conditionsLayout.addView(propertyView,
+                    new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            Log.d("showConditions", "added: " + propDef.getName());
+
+        }
+
+    }
+
+    private void updateConditions() {
+        for (RXTypeView typeView : conditionViews) {
+            RXPropertyDefinition propDef = reaction.getDefinition().getPropertyDefinitions();
+            RXConditionDefinition condDef = stimuli.getDefinition().getConditionDefinitionByName(typeView.getName());
+
+            if (condDef.getDependsOn().size() > 0) {
+                typeView.setEnabled(true);
+
+                for (RXConditionDefinition dependency : condDef.getDependsOn()) {
+                    RXStimuliCondition cond = stimuli.getConditionByName(dependency.getName());
+                    if (cond == null || cond.getValue() == null) {
+                        typeView.setEnabled(false);
+                        break;
+                    }
+                }
+            }
+        }
 
     }
 }

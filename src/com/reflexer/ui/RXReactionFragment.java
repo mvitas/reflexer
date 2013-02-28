@@ -133,9 +133,8 @@ public class RXReactionFragment extends Fragment {
 
                 @Override
                 public void onValueChanged(String name, Object value) {
-//                    reaction.addParam()
-                    
-                    
+                    // reaction.addParam()
+
                     updateConditions();
                 }
             });
@@ -152,20 +151,10 @@ public class RXReactionFragment extends Fragment {
 
     private void updateConditions() {
         for (RXTypeView typeView : conditionViews) {
-//            RXPropertyDefinition propDef = reaction.getDefinition().get
-//            RXConditionDefinition condDef = stimuli.getDefinition().getConditionDefinitionByName(typeView.getName());
-//
-//            if (condDef.getDependsOn().size() > 0) {
-//                typeView.setEnabled(true);
-//
-//                for (RXConditionDefinition dependency : condDef.getDependsOn()) {
-//                    RXStimuliCondition cond = stimuli.getConditionByName(dependency.getName());
-//                    if (cond == null || cond.getValue() == null) {
-//                        typeView.setEnabled(false);
-//                        break;
-//                    }
-//                }
-//            }
+            RXPropertyDefinition propDef = reaction.getDefinition().getPropertyDefinitionByName(typeView.getName());
+
+            typeView.setEnabled(true);
+
         }
 
     }

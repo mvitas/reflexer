@@ -160,7 +160,7 @@
 
         <activity
             android:name="com.reflexer.ui.RXMenuActivity"
-            android:theme="@style/Theme.Sherlock.Light.DarkActionBar" >
+            android:theme="@style/ActionBarTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

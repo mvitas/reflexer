@@ -1,3 +1,4 @@
+
 package com.reflexer.ui;
 
 import android.content.ComponentName;
@@ -15,84 +16,84 @@ import com.viewpagerindicator.TabPageIndicator;
 
 public class RXCreateActivity extends SherlockFragmentActivity {
 
-	/**
-	 * Value meaning that no reflex index was set.
-	 */
-	private static final int NO_INDEX_SET = -1;
+    /**
+     * Value meaning that no reflex index was set.
+     */
+    private static final int NO_INDEX_SET = -1;
 
-	public static final String REFLEX_INDEX = "reflex-index";
+    public static final String REFLEX_INDEX = "reflex-index";
 
-	private ViewPager mPager;
-	private TabPageIndicator mIndicator;
-	private RXFragmentAdapter mAdapter;
+    private ViewPager mPager;
+    private TabPageIndicator mIndicator;
+    private RXFragmentAdapter mAdapter;
 
-	/**
-	 * Is the reflex being updated or created.
-	 */
-	private boolean update;
+    /**
+     * Is the reflex being updated or created.
+     */
+    private boolean update;
 
-	/**
-	 * Reflex that is being updated or created
-	 */
-	private RXReflex reflex;
+    /**
+     * Reflex that is being updated or created
+     */
+    private RXReflex reflex;
 
-	/**
-	 * IBinder interface for accessing RXService methods.
-	 */
-	private RXBinder serviceBinder;
+    /**
+     * IBinder interface for accessing RXService methods.
+     */
+    private RXBinder serviceBinder;
 
-	private final ServiceConnection connecton = new ServiceConnection() {
+    private final ServiceConnection connecton = new ServiceConnection() {
 
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			serviceBinder = null;
-		}
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            serviceBinder = null;
+        }
 
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder binder) {
-			serviceBinder = ((RXBinder) binder);
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            serviceBinder = ((RXBinder)binder);
 
-			setupTabs();
-		}
-	};
+            setupTabs();
+        }
+    };
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_create);
+        setContentView(R.layout.activity_create);
 
-		getSupportActionBar().setTitle("Create");
+        getSupportActionBar().setTitle("Create");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-	}
+    private void setupTabs() {
 
-	private void setupTabs() {
+        int reflexIndex = getIntent().getExtras().getInt(REFLEX_INDEX, NO_INDEX_SET);
 
-		int reflexIndex = getIntent().getExtras().getInt(REFLEX_INDEX, NO_INDEX_SET);
+        update = reflexIndex != NO_INDEX_SET;
 
-		update = reflexIndex != NO_INDEX_SET;
+        if (!update) {
+            createDefaultReflex();
+        } else {
+            getReflexWidthIndex(reflexIndex);
+        }
 
-		if (!update) {
-			createDefaultReflex();
-		} else {
-			getReflexWidthIndex(reflexIndex);
-		}
+        mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager(), reflex);
 
-		mAdapter = new RXFragmentAdapter(this, getSupportFragmentManager(), reflex);
+        mPager = (ViewPager)findViewById(R.id.pager);
+        mPager.setAdapter(mAdapter);
 
-		mPager = (ViewPager) findViewById(R.id.pager);
-		mPager.setAdapter(mAdapter);
+        mIndicator = (TabPageIndicator)findViewById(R.id.indicator);
+        mIndicator.setViewPager(mPager);
+    }
 
-		mIndicator = (TabPageIndicator) findViewById(R.id.indicator);
-		mIndicator.setViewPager(mPager);
-	}
+    private void createDefaultReflex() {
 
-	private void createDefaultReflex() {
+    }
 
-	}
+    private void getReflexWidthIndex(int index) {
 
-	private void getReflexWidthIndex(int index) {
-
-	}
+    }
 
 }

@@ -2,12 +2,16 @@
 package com.reflexer.ui;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.reflexer.R;
 import com.reflexer.model.RXReflex;
 import com.reflexer.service.RXBinder;
@@ -94,6 +98,21 @@ public class RXCreateActivity extends SherlockFragmentActivity {
 
     private void getReflexWidthIndex(int index) {
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Create Reflex").setIcon(R.drawable.ic_action_accept).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+
+        // Intent intent = new Intent(this, RXCreateActivity.class);
+        // startActivity(intent);
+
+        return super.onMenuItemSelected(featureId, item);
     }
 
 }

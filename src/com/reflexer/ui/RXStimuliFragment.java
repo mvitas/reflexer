@@ -150,7 +150,6 @@ public class RXStimuliFragment extends Fragment {
 			});
 
 			conditionViews.add(conditionView);
-			conditionViews.add(conditionView);
 			conditionsLayout.addView(conditionView, new LayoutParams(LayoutParams.FILL_PARENT,
 					LayoutParams.WRAP_CONTENT));
 			Log.d("showConditions", "added: " + condDef.getName());

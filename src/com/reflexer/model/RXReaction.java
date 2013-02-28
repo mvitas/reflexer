@@ -1,6 +1,5 @@
 package com.reflexer.model;
 
-import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 
@@ -148,6 +147,30 @@ public abstract class RXReaction {
 		}
 	}
 
+	/**
+	 * Sets the state of the condition with the given name, and checks if all
+	 * set conditions are met. If conditions are met, returns true.
+	 * 
+	 * @param conditionName
+	 * @param state
+	 * @return
+	 */
+	public boolean setParam(RXReactionProperty param) {
+		boolean shouldAdd = true;
+
+		for (RXReactionProperty p : getParamList()) {
+			if (p.getName().equals(param.getName())) {
+				p.setValue(param.getValue());
+				shouldAdd = false;
+			}
+		}
+		if (shouldAdd) {
+			getParamList().add(param);
+		}
+
+		return shouldAdd;
+	}
+
 	public RXReactionDefinition getDefinition() {
 		return definition;
 	}
@@ -213,27 +236,26 @@ public abstract class RXReaction {
 
 		return cv;
 	}
-	
-	public static int getReactionPropertyType(Context context,
-			String reactionName, String propertyDefinitionName) {
-		
+
+	public static int getReactionPropertyType(Context context, String reactionName, String propertyDefinitionName) {
+
 		RXReactionDefinition reactionDefinition = getReactionDefinitionByName(context, reactionName);
-		
-		ArrayList<RXPropertyDefinition> reactionPropertyDefinitions =  reactionDefinition.getPropertyDefinitions();
-		
+
+		ArrayList<RXPropertyDefinition> reactionPropertyDefinitions = reactionDefinition.getPropertyDefinitions();
+
 		int type = -1;
-		
-		for (RXPropertyDefinition def : reactionPropertyDefinitions){
-			if(def.getName().equals(propertyDefinitionName)){
+
+		for (RXPropertyDefinition def : reactionPropertyDefinitions) {
+			if (def.getName().equals(propertyDefinitionName)) {
 				type = def.getType();
 				break;
 			}
 		}
-		
-		if (type == -1){
-			throw new IllegalStateException("type doesn't match ConditionDefinition type"); 
+
+		if (type == -1) {
+			throw new IllegalStateException("type doesn't match ConditionDefinition type");
 		}
-		
+
 		return type;
 	}
 

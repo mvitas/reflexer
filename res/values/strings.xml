@@ -6,4 +6,6 @@
     <string name="menu_settings">Settings</string>
     <string name="not_implemented">Methif not implemented</string>
 
+    <string name="reflex_name">Reflex name:</string>
+    
 </resources>

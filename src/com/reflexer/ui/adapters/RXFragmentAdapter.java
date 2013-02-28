@@ -1,4 +1,3 @@
-
 package com.reflexer.ui.adapters;
 
 import android.content.Context;
@@ -6,44 +5,67 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.reflexer.model.RXReflex;
+import com.reflexer.ui.RXNameFragment;
 import com.reflexer.ui.RXReactionFragment;
 import com.reflexer.ui.RXStimuliFragment;
 
 public class RXFragmentAdapter extends FragmentPagerAdapter {
-    protected static final String[] CONTENT = new String[] {
-            "STIMULI", "REACTION"
-    };
 
-    private Context context;
-    private int count = CONTENT.length;
+	protected static final String[] CONTENT = new String[] { "NAME", "STIMULI", "REACTION" };
 
-    public RXFragmentAdapter(Context context, FragmentManager fm) {
-        super(fm);
-        this.context = context;
-    }
+	private final Context context;
+	private RXReflex reflex;
+	private final int count = CONTENT.length;
 
-    @Override
-    public Fragment getItem(int arg0) {
+	private final RXNameFragment nameFragment;
 
-        switch (arg0) {
-            case 0:
-                return new RXStimuliFragment().newInstance();
-            case 1:
-                return new RXReactionFragment().newInstance();
-        }
+	private final RXStimuliFragment stimuliFragment;
 
-        return null;
-    }
+	private final RXReactionFragment reactionFragment;
 
-    @Override
-    public int getCount() {
+	public RXFragmentAdapter(Context context, FragmentManager fm) {
+		super(fm);
+		this.context = context;
 
-        return count;
-    }
+		nameFragment = RXNameFragment.newInstance();
+		stimuliFragment = RXStimuliFragment.newInstance();
+		reactionFragment = RXReactionFragment.newInstance();
+	}
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return RXFragmentAdapter.CONTENT[position % CONTENT.length];
-    }
+	public RXFragmentAdapter(Context context, FragmentManager fm, RXReflex reflex) {
+		super(fm);
+		this.context = context;
+		this.reflex = reflex;
+
+		nameFragment = RXNameFragment.newInstance(reflex.getName());
+		stimuliFragment = RXStimuliFragment.newInstance(reflex.getStimuli());
+		reactionFragment = RXReactionFragment.newInstance(reflex.getReaction());
+	}
+
+	@Override
+	public Fragment getItem(int index) {
+
+		switch (index) {
+		case 0:
+			return nameFragment;
+		case 1:
+			return stimuliFragment;
+		case 2:
+			return reactionFragment;
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	public int getCount() {
+		return count;
+	}
+
+	@Override
+	public CharSequence getPageTitle(int position) {
+		return RXFragmentAdapter.CONTENT[position % CONTENT.length];
+	}
 
 }

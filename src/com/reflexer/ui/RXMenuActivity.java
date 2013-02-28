@@ -36,7 +36,7 @@ public class RXMenuActivity extends SherlockActivity {
 	 */
 	private RXBinder serviceBinder;
 
-	private final ServiceConnection mConnection = new ServiceConnection() {
+	private final ServiceConnection connection = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -85,14 +85,14 @@ public class RXMenuActivity extends SherlockActivity {
 	protected void onResume() {
 		super.onResume();
 
-		bindService(new Intent(this, RXService.class), mConnection, Context.BIND_AUTO_CREATE);
+		bindService(new Intent(this, RXService.class), connection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 
-		unbindService(mConnection);
+		unbindService(connection);
 	}
 
 	@Override
